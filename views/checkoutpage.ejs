@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - Video Editor Marketplace</title>
+
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+        :root {
+            --primary-color: #dc2626;
+            --primary-hover: #b91c1c;
+            --background-color: #f9fafb;
+            --border-color: #e5e7eb;
+            --text-color: #111827;
+            --text-secondary: #6b7280;
+            --selected-bg: #fee2e2;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            font-family:'Inter', sans-serif; ;
+            background-color: var(--background-color);
+            padding: 32px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .page-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 32px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .video-details {
+            display: flex;
+            gap: 24px;
+            margin-bottom: 40px;
+            padding-bottom: 32px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .video-thumbnail {
+            width: 240px;
+            height: 135px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        .video-info h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-color);
+        }
+
+        .video-info p {
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+            font-size: 0.875rem;
+        }
+
+        h2 {
+            font-weight: 600;
+            margin-bottom: 24px;
+        }
+
+        .delivery-options {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .delivery-option {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .delivery-option.selected {
+            background-color: var(--selected-bg);
+            border-color: var(--primary-color);
+        }
+
+        .delivery-option-title {
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .delivery-option-price {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .payment-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .payment-option {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.2s;
+        }
+
+        .payment-option.selected {
+            background-color: var(--selected-bg);
+            border-color: var(--primary-color);
+        }
+
+        .payment-option-details {
+            flex: 1;
+        }
+
+        .payment-option-title {
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .payment-option-description {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .price-breakdown {
+            border-top: 1px solid var(--border-color);
+            padding-top: 24px;
+            margin-bottom: 24px;
+        }
+
+        .price-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            color: var(--text-secondary);
+        }
+
+        .price-row.total {
+            color: var(--text-color);
+            font-weight: 600;
+            font-size: 1.125rem;
+            margin-top: 16px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 16px;
+        }
+
+        .total-amount {
+            color: var(--primary-color);
+        }
+
+        .pay-button {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            width: 100%;
+            transition: background-color 0.2s;
+        }
+
+        .pay-button:hover {
+            background-color: var(--primary-hover);
+        }
+
+
+        .client-input {
+            margin-bottom: 32px;
+            padding-bottom: 32px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .client-input label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .client-input textarea,
+        .client-input input[type="url"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            margin-bottom: 16px;
+        }
+
+        .client-input textarea {
+            height: 100px;
+            resize: vertical;
+        }
+
+
+        @media (max-width: 498px) {
+            .delivery-options, .payment-options {
+                grid-template-columns: 1fr;
+            }
+
+            .video-details {
+                flex-direction: column;
+            }
+
+            .video-thumbnail {
+                width: 100%;
+                height: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="page-title">Checkout</h1>
+        
+        <div class="video-details">
+            <img src="https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?auto=format&fit=crop&q=80" alt="Video Thumbnail" class="video-thumbnail">
+            <div class="video-info">
+                <h2>Professional Video Editing</h2>
+                <p>Editor: John Smith</p>
+                <p>Category: Commercial</p>
+            </div>
+        </div>
+
+        <div class="client-input">
+            <label for="video-link">Your Video Link:</label>
+            <input type="url" id="video-link" placeholder="https://example.com/your-video">
+            
+            <label for="client-message">Message for the Video Editor:</label>
+            <textarea id="client-message" placeholder="Enter any specific instructions or details for the editor..."></textarea>
+        </div>
+
+        <h2>Select Delivery Time</h2>
+        <div class="delivery-options">
+            <div class="delivery-option" data-value="1day" onclick="selectDelivery(this)">
+                <div class="delivery-option-title">Express (1 Day)</div>
+                <div class="delivery-option-price">+₹200</div>
+            </div>
+            <div class="delivery-option" data-value="3day" onclick="selectDelivery(this)">
+                <div class="delivery-option-title">Priority (3 Days)</div>
+                <div class="delivery-option-price">+₹100</div>
+            </div>
+            <div class="delivery-option selected" data-value="normal" onclick="selectDelivery(this)">
+                <div class="delivery-option-title">Standard (7 Days)</div>
+                <div class="delivery-option-price">Free</div>
+            </div>
+        </div>
+
+        <h2>Payment Method</h2>
+        <div class="payment-options">
+            <div class="payment-option selected" data-value="online" onclick="selectPayment(this)">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="5" width="20" height="14" rx="2"/>
+                    <line x1="2" y1="10" x2="22" y2="10"/>
+                </svg>
+                <div class="payment-option-details">
+                    <div class="payment-option-title">Pay Now</div>
+                    <div class="payment-option-description">No additional charges</div>
+                </div>
+            </div>
+            <div class="payment-option" data-value="cod" onclick="selectPayment(this)">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                </svg>
+                <div class="payment-option-details">
+                    <div class="payment-option-title">Pay on Delivery</div>
+                    <div class="payment-option-description">+₹50</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="price-breakdown">
+            <div class="price-row">
+                <span>Base Price</span>
+                <span id="basePrice"></span>
+            </div>
+            <div class="price-row" id="deliveryCharge" style="display: none;">
+                <span>Delivery Charges</span>
+                <span id="deliveryChargeAmount">₹0.00</span>
+            </div>
+            <div class="price-row" id="codCharge" style="display: none;">
+                <span>POD Charges</span>
+                <span id="codChargeAmount">₹0.00</span>
+            </div>
+            <div class="price-row total">
+                <span>Total</span>
+                <span class="total-amount">₹<span id="totalPrice"></span></span>
+            </div>
+        </div>
+
+        <button class="pay-button" onclick="confirmOrder()">
+            Pay Now ₹<span id="payButtonAmount"></span>
+        </button>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const basePrice = parseFloat(urlParams.get('amt'));
+        let totalPrice = basePrice;
+        document.getElementById('payButtonAmount').textContent = totalPrice.toFixed(2);
+
+        function selectDelivery(element) {
+            document.querySelectorAll('.delivery-option').forEach(opt => opt.classList.remove('selected'));
+            element.classList.add('selected');
+            updateTotalPrice();
+        }
+
+        function selectPayment(element) {
+            document.querySelectorAll('.payment-option').forEach(opt => opt.classList.remove('selected'));
+            element.classList.add('selected');
+            updateTotalPrice();
+        }
+
+        function updateTotalPrice() {
+            const selectedDelivery = document.querySelector('.delivery-option.selected').dataset.value;
+            const selectedPayment = document.querySelector('.payment-option.selected').dataset.value;
+
+            let deliveryCharge = 0;
+            let codCharge = 0;
+
+            if (selectedDelivery === '3day') {
+                deliveryCharge = 100;
+            } else if (selectedDelivery === '1day') {
+                deliveryCharge = 200;
+            }
+
+            if (selectedPayment === 'cod') {
+                codCharge = 50;
+//
+                document.querySelector('.pay-button').innerHTML='Confirm Order'
+            }
+            else{
+                document.querySelector('.pay-button').innerHTML='Pay Now ₹<span id="payButtonAmount"></span>'
+            }
+
+            totalPrice = basePrice + deliveryCharge + codCharge;
+
+            // Update breakdown
+            document.getElementById('basePrice').textContent = `₹${basePrice.toFixed(2)}`;
+            
+            const deliveryChargeElement = document.getElementById('deliveryCharge');
+            if (deliveryCharge > 0) {
+                deliveryChargeElement.style.display = 'flex';
+                document.getElementById('deliveryChargeAmount').textContent = `₹${deliveryCharge.toFixed(2)}`;
+            } else {
+                deliveryChargeElement.style.display = 'none';
+            }
+
+            const codChargeElement = document.getElementById('codCharge');
+            if (codCharge > 0) {
+                codChargeElement.style.display = 'flex';
+                document.getElementById('codChargeAmount').textContent = `₹${codCharge.toFixed(2)}`;
+            } else {
+                codChargeElement.style.display = 'none';
+            }
+
+            document.getElementById('totalPrice').textContent = totalPrice.toFixed(2);
+
+            const payButtonAmount = document.getElementById('payButtonAmount');
+            if (payButtonAmount && !isNaN(totalPrice)) {
+                payButtonAmount.textContent = totalPrice.toFixed(2);
+            }
+        }
+
+        function confirmOrder() {
+            // alert(`Order confirmed! Total amount: ₹${totalPrice.toFixed(2)}`);
+            // Here you can add code to process the payment or submit the order
+            const videoId = urlParams.get('videoId');
+            amount=document.querySelector('#totalPrice').innerHTML;
+            if(document.querySelector('.payment-option.selected').dataset.value === 'cod'){
+                // alert('Order confirmed! Total amount: ₹' + totalPrice.toFixed(2));
+                sendPODPOST(videoId, amount);
+                return;
+            }
+            // console.log("amt:: ", amount)
+            createOrder(videoId, amount);
+        }
+
+        // Initialize total price
+        updateTotalPrice();
+
+
+        async function createOrder(videoId, amount){
+            try {
+                const response = await fetch("/create-order", { 
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({videoId, amount }) // Convert form data to JSON
+                });
+
+                const order = await response.json(); // Get order ID from backend
+                console.log("order::: ", order.notes)
+                //order se options banaege
+                var options = {
+                    key: order.key_id, // Replace with Razorpay Key ID
+                    amount: order.amount, // Amount from backend (in paise)
+                    currency: "INR",
+                    name: order.notes.prod_name,
+                    image: "https://4kwallpapers.com/images/walls/thumbs_3t/7414.jpg",
+                    description: order.notes.prod_desc,
+                    order_id: order.id, // Order ID from backend
+                    method: ["upi", "card", "netbanking", "wallet"],
+                    handler: function (response) {
+                        alert("Payment Successful! Payment ID: " + response.razorpay_payment_id);
+                        sendPaymentSuccessPOST(response);
+                    },
+                    // prefill: {
+                    //     //ye to jwt se uthao (user context se)
+                    //     name: "pp",
+                    //     email: "johndoe@example.com",
+                    //     contact: "12345678"
+                    // },
+                    theme: { color: "#212121" }
+                };
+
+                var rzp1 = new Razorpay(options);
+                // rzp1.on('payment.failed', function (response){
+                // 	alert("pp Payment Failed");
+                // });
+                rzp1.open();
+            } catch (error) {
+                console.log("Error creating order:", error);
+            }
+        }
+
+        async function sendPaymentSuccessPOST(response){
+            try {
+                const res = await fetch("/payment-confirmed", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        razorpay_payment_id: response.razorpay_payment_id,
+                        razorpay_order_id: response.razorpay_order_id,
+                        razorpay_signature: response.razorpay_signature,
+                        messageByClient: document.querySelector('#client-message').value,
+                        clientVideoLink: document.querySelector('#video-link').value,
+                    })
+                });
+
+                const data = await res.json();
+                if (res.ok) {
+                    alert("Payment Successful! Your order has been placed.");
+                    window.location.href = "/user"; // Redirect user after success
+                } else {
+                    alert("Payment verification failed. Please contact support.");
+                }
+            } catch (error) {
+                console.error("Error verifying payment:", error);
+                alert("Something went wrong. Please try again.");
+            }
+        }
+    
+    
+        async function sendPODPOST(videoId, amount){
+            try {
+                const res=await fetch('/payment-pod', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        messageByClient: document.querySelector('#client-message').value,
+                        clientVideoLink: document.querySelector('#video-link').value,
+                        videoId,
+                        amount
+                    })
+                })
+                const data=await res.json();
+                if(res.ok){
+                    alert("POD order placed successfully.");
+                    window.location.href = "/user"; // Redirect user after success
+                }else{
+                    alert("Something went wrong. Please try again.");
+                }
+
+                
+            } catch (error) {
+                console.error("POD error:", error);
+                alert("Something went wrong. Please try again.");
+            }
+        }
+    </script>
+</body>
+</html>

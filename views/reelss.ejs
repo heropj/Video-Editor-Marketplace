@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Feed</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        .rl-container *{
+            color: #fff;
+        }
+
+
+        .rl-container {
+    display: flex;
+    height: 90vh; /* Ensure the container takes full viewport height */
+
+    justify-content: center;
+   
+    }
+
+.activeliked{
+    background-color: red;
+}
+
+.rl-video-feed {
+    /* flex: 1; */
+    height: 100%; /* Set the height to 100% of the parent (.rl-container) */
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    width: fit-content;
+}
+
+
+        .rl-video-container {
+            height: 100%;
+            position: relative;
+            scroll-snap-type: y mandatory;
+            overflow-y: scroll;
+            scrollbar-width: none;
+            width: fit-content;
+        }
+
+.rl-filter-container{
+    height: 100%;
+    position: absolute;
+    width: 100%;
+}
+
+        .rl-video-item {
+            height: 100%;
+            width: fit-content;
+            scroll-snap-align: start;
+            position: relative;
+            background: #1a1a1a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .rl-video {
+            width: 340px;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .rl-video-info {
+            position: absolute;
+            bottom: 20px;
+            z-index: 2;
+            width: 90%;
+            display: flex;
+        }
+
+        .rl-viddesc {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: end;
+        }
+
+        .rl-action-buttons-container {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .rl-action-buttons-container > * {
+            border: 1px solid white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .rl-action-buttons-container *:hover {
+            /* color: black; */
+            background-color: #ee373e;
+        }
+
+        .rl-video-info h3 {
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+        }
+
+        .rl-video-info p {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        /* Sidebar Styles */
+        .rl-sidebar {
+            width: 200px;
+            background: #1a1a1a;
+            overflow-y: auto;
+        }
+
+        .rl-filter-button {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            background: #2a2a2a;
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .rl-filter-button:hover {
+            background: #333;
+        }
+
+        .rl-filter-button.active {
+            background: #e74c3c;
+        }
+
+        .rl-filter-icon {
+            width: 32px;
+            height: 32px;
+            background: #e74c3c;
+            border-radius: 50%;
+            margin-right: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .rl-filter-text {
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        @media (max-width: 768px){
+            .rl-sidebar {
+                display: none;
+            }
+        }
+    </style>
+
+<style>
+
+.filter-fab {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: #ff4757;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    z-index: 100;
+    transition: all 0.3s ease;
+}
+
+.filter-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: fit-content;
+    background-color: rgba(0,0,0,0.8);
+    z-index: 90;
+    display: flex;
+    flex-direction: column;
+    padding: 80px 20px 20px;
+    overflow-y: auto;
+    transition: all 0.3s ease;
+    transform: translateY(-100%);
+}
+
+.filter-overlay.active {
+    transform: translateY(0);
+}
+
+.filter-section {
+    margin-bottom: 24px;
+}
+
+.filter-label {
+    font-size: 14px;
+    color: #ccc;
+    margin-bottom: 12px;
+    display: block;
+}
+
+.filter-chips {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.filter-chip {
+    padding: 8px 16px;
+    background-color: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 20px;
+    font-size: 14px;
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.filter-chip:hover, .filter-chip.active {
+    background-color: #ff4757;
+    border-color: #ff4757;
+}
+
+.filter-chip .count {
+    font-size: 12px;
+    opacity: 0.7;
+}
+
+
+</style>
+</head>
+<body>
+    <div class="rl-container">
+        <!-- Video Feed -->
+        <div class="rl-video-feed">
+            <div class="rl-video-container" id="rl-videoContainer">
+
+                <!-- Videos will be dynamically inserted here -->
+            </div>
+            <div class="rl-filter-container">
+                <div class="rl-filters">
+                    <button class="filter-fab" id="filterFab">
+                        <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z"/>
+                        </svg>
+                    </button>
+                    
+                    <div class="filter-overlay" id="filterOverlay">
+                        <div class="filter-section">
+                            <span class="filter-label">Categories</span>
+                            <div class="filter-chips">
+                                <button class="filter-chip active">
+                                    All Videos
+                                    <span class="count">245</span>
+                                </button>
+                                <button class="filter-chip">
+                                    Activewear
+                                    <span class="count">84</span>
+                                </button>
+                                <button class="filter-chip">
+                                    Casual
+                                    <span class="count">56</span>
+                                </button>
+                                <button class="filter-chip">
+                                    Business
+                                    <span class="count">32</span>
+                                </button>
+                            </div>
+                        </div>
+                    
+                        <div class="filter-section">
+                            <span class="filter-label">Duration</span>
+                            <div class="filter-chips">
+                                <button class="filter-chip">
+                                    Short
+                                    <span class="count">125</span>
+                                </button>
+                                <button class="filter-chip">
+                                    Medium
+                                    <span class="count">85</span>
+                                </button>
+                                <button class="filter-chip">
+                                    Long
+                                    <span class="count">35</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+<script>
+    const filterFab = document.getElementById('filterFab');
+    const filterOverlay = document.getElementById('filterOverlay');
+
+    filterFab.addEventListener('click', () => {
+        filterOverlay.classList.toggle('active');
+    });
+
+    document.querySelectorAll('.filter-chip').forEach(button => {
+        button.addEventListener('click', () => {
+            button.parentElement.querySelectorAll('.filter-chip').forEach(sibling => {
+                sibling.classList.remove('active');
+            });
+            button.classList.add('active');
+        });
+    });
+</script>
+
+    <script>
+        // Sample video data
+        async function getvideos() {
+            const response = await fetch('/api/videos'); // Fetch videos from backend
+            const videos = await response.json(); // Parse JSON response
+            // console.log(videos)
+            return videos
+            
+        }
+
+        async function getlikes() {
+            const response = await fetch('/api/like'); // Fetch videos from backend
+            const likes = await response.json(); // Parse JSON response
+            // console.log("likes: ",likes)
+            return likes.map(likedVideo => likedVideo.video);
+        }
+        
+// Use an async function to handle the result
+async function loadVideos() {
+    const videos = await getvideos(); // Wait for the promise to resolve
+    const likes = await getlikes(); // Wait for the promise to resolve
+    // console.log("likkess: ", likes)
+
+    const vidpp = videos.map(video => ({
+        editorId:video.owner,
+        url: video.videoUrl, // Assuming the API returns `url` field
+        title: video.title, // Assuming the API returns `title` field
+        description: video.description, // Assuming the API returns `description` field
+        category: video.category, // Assuming the API returns `category` field
+        price: video.price, // Assuming the API returns `price` field
+        _id:video._id,
+        isLiked:likes.includes(video._id)
+    }));
+
+    return vidpp; // Use this as needed
+}
+
+        const rlVideoContainer = document.getElementById('rl-videoContainer');
+        let currentFilter = 'all';
+        let videos=[];
+
+        // Function to create video elements
+        function createVideoElement(video) {
+            const videoItem = document.createElement('div');
+            videoItem.className = 'rl-video-item';
+            videoItem.innerHTML = `
+                <video class="rl-video" loop muted playsinline>
+                    <source id="${video._id}" src="${video.url}" type="video/mp4">
+                </video>
+                <div class="rl-video-info">
+                    <div class="rl-viddesc">
+                        <h3 id='vidtitle'>${video.title}</h3>
+                        <p id='viddesc'>${video.description}</p>
+                        <p id='${video.editorId}' class='video-owner'>${video.editorId}</p>
+                        <p style="font-size:20px; font-style: italic;" id='vidprice'>$${video.price}</p>
+                    </div>
+                    <div class="rl-vidoptions">
+                        <div class="rl-action-buttons-container">
+                            <span class="rl-heart-icon ${video.isLiked? "activeliked": ""}" onclick="toggleHeart(event)" }">${video.isLiked ? '❤' : '♡'}</span>
+                            <a class="rl-buy-now-icon">
+                                <i class="fas fa-shopping-bag" ></i>
+                            </a>
+                            <a class="rl-cart-icon" id="pay-btn">
+                                <i class="fas fa-shopping-cart" ></i>
+                            </a>
+                            <span class="rl-share-icon">
+                                <i class="fas fa-share-alt" ></i>
+                            </span>
+                        </div>  
+                    </div>
+                </div>
+            `;
+            return videoItem;
+        }
+
+        function toggleHeart(event) {
+            const hearticon = event.target;
+            if (hearticon.innerHTML == '❤') {
+                hearticon.innerHTML = '♡'
+            } else {
+                hearticon.innerHTML = '❤'
+
+            }
+            document.querySelector('.rl-heart-icon').classList.toggle('activeliked');
+            // console.log(document.querySelector('.rl-heart-icon').innerHTML)
+            sendLike(document.querySelector('.rl-heart-icon').innerHTML=='❤' ? 'unliked' : 'liked');
+        }
+
+        async function sendLike(curricon){
+            const vidid=document.querySelector('.rl-video source').id;
+            console.log("vidurl vidlike", vidid)
+            const response = await fetch('/api/like', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({vidid, curricon})
+            });
+            const data = await response.json();
+            console.log(data);
+        }
+
+        // Function to filter and display videos
+        function filterVideos(category) {
+            rlVideoContainer.innerHTML = '';
+            const filteredVideos = category === 'all' 
+                ? videos 
+                : videos.filter(video => video.category === category);
+            
+            if (filteredVideos.length === 0) {
+                // Display "No videos found" message
+                const noVideosMessage = document.createElement('div');
+                noVideosMessage.style.width = '340px'
+                noVideosMessage.textContent = 'No videos found!';
+                noVideosMessage.style.textAlign = 'center'; // Optional styling
+                noVideosMessage.style.marginTop = '20px';  // Optional styling
+                rlVideoContainer.appendChild(noVideosMessage);
+            } else {
+                filteredVideos.forEach(video => {
+                    rlVideoContainer.appendChild(createVideoElement(video));
+                    
+                });
+
+                // Initialize video playing logic
+                initializeVideos();
+            }
+        }
+
+        // Function to handle intersection observer for videos
+        function initializeVideos() {
+            const videoElements = document.querySelectorAll('.rl-video');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    const video = entry.target;
+                    if (entry.isIntersecting) {
+                        video.play();
+                    } else {
+                        video.pause();
+                        video.currentTime = 0;
+                    }
+                });
+            }, { threshold: 0.7 });
+
+            videoElements.forEach(video => observer.observe(video));
+        }
+
+        // Add click handlers for filter buttons
+        document.querySelectorAll('.rl-filter-button').forEach(button => {
+            button.addEventListener('click', () => {
+                // Update active state
+                document.querySelector('.rl-filter-button.active').classList.remove('active');
+                button.classList.add('active');
+
+                // Filter videos
+                const category = button.dataset.category;
+                currentFilter = category;
+                filterVideos(category);
+            });
+        });
+
+        // Initial load
+        async function initialize() {
+        videos = await loadVideos(); // Fetch videos from the database
+        console.log("vidpp: ", videos)
+        filterVideos('all'); // Display all videos initially
+    }
+
+    initialize(); // Fetch and render videos on page load
+
+    document.addEventListener("DOMContentLoaded", function () {
+        // prod_name, amount, prod_desc
+        document.body.addEventListener("click", async function (event) {
+            // console.log(document.querySelector('#vidtitle'))
+            let videoInfo = event.target.closest(".rl-video-info");
+            const editorId=videoInfo.querySelector('.video-owner').id;
+            let viddpp=event.target.closest('.rl-video-item')
+            const videoId=viddpp.querySelector('.rl-video source').id;
+        const prod_name=videoInfo.querySelector('#vidtitle').innerHTML;
+        console.log(prod_name)
+        const amount=videoInfo.querySelector('#vidprice').innerHTML.replace("$", "");
+        // console.log(document.querySelector('#vidprice').innerHTML)
+        const prod_desc=videoInfo.querySelector('#viddesc').innerHTML;
+            if (event.target.closest("#pay-btn")) { // Ensures correct element is clicked
+                try {
+                    const response = await fetch("/create-order", { 
+                    method: "POST",
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ amount, editorId, videoId }) // Convert form data to JSON
+                    });
+
+                    const order = await response.json(); // Get order ID from backend
+                    console.log("order::: ", order)
+                    //order se options banaege
+                    var options = {
+                        key: order.key_id, // Replace with Razorpay Key ID
+                        amount: order.amount, // Amount from backend (in paise)
+                        currency: "INR",
+                        name: prod_name,
+                        image: "https://4kwallpapers.com/images/walls/thumbs_3t/7414.jpg",
+                        description: prod_desc,
+                        order_id: order.id, // Order ID from backend
+                        method: ["upi", "card", "netbanking", "wallet"],
+                        handler: function (response) {
+                            alert("Payment Successful! Payment ID: " + response.razorpay_payment_id);
+                            sendPaymentSuccessPOST(response);
+                        },
+                        // prefill: {
+                        //     //ye to jwt se uthao (user context se)
+                        //     name: "pp",
+                        //     email: "johndoe@example.com",
+                        //     contact: "12345678"
+                        // },
+                        theme: { color: "#212121" }
+                    };
+
+                    var rzp1 = new Razorpay(options);
+                    // rzp1.on('payment.failed', function (response){
+					// 	alert("pp Payment Failed");
+					// });
+                    rzp1.open();
+                } catch (error) {
+                    console.log("Error creating order:", error);
+                }
+            }
+        });
+});
+
+
+async function sendPaymentSuccessPOST(response){
+    try {
+        const res = await fetch("/payment-confirmed", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_signature: response.razorpay_signature
+            })
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+            alert("Payment Successful! Your order has been placed.");
+            window.location.href = "/user"; // Redirect user after success
+        } else {
+            alert("Payment verification failed. Please contact support.");
+        }
+    } catch (error) {
+        console.error("Error verifying payment:", error);
+        alert("Something went wrong. Please try again.");
+    }
+}
+    </script>
+</body>
+</html>

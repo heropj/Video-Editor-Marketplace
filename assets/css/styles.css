@@ -1,0 +1,277 @@
+/* General Styles */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    color: #333;
+}
+
+.dashboard {
+    display: flex;
+    height: 100vh;
+}
+
+/* Sidebar Styles */
+.sidebar {
+    min-width: 250px;
+    background-color: #2c3e50;
+    color: #ecf0f1;
+    display: flex;
+    flex-direction: column;
+
+    z-index:10;
+}
+
+.sidebar-header {
+    padding: 20px;
+    text-align: center;
+}
+
+.avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin: 0 auto 10px;
+}
+
+.avatar.large {
+    width: 120px;
+    height: 120px;
+}
+
+.avatar-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.sidebar-username {
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+}
+
+.sidebar-nav {
+    flex-grow: 1;
+}
+
+.sidebar-nav ul {
+    list-style-type: none;
+}
+
+.sidebar-nav a {
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
+    color: #ecf0f1;
+    text-decoration: none;
+    transition: background-color 0.3s;
+}
+
+.sidebar-nav a:hover,
+.sidebar-nav a.active {
+    background-color: #34495e;
+}
+
+.sidebar-nav a i {
+    margin-right: 10px;
+}
+
+.sidebar-footer {
+    padding: 20px;
+}
+
+/* Content Styles */
+.content {
+    flex-grow: 1;
+    /* padding: 20px; */
+    padding-top:12px;
+    overflow-y: auto;
+}
+
+.page {
+    display: none;
+}
+
+.page.active {
+    display: block;
+}
+
+h1 {
+    margin-bottom: 20px;
+}
+
+/* Card Styles */
+.card {
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.dashboard-cards,
+.order-cards,
+.explore-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.card-value {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.profile-card {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.card-header,
+.card-content,
+.card-footer {
+    padding: 20px;
+}
+
+.card-header h2 {
+    margin-bottom: 5px;
+}
+
+/* Form Styles */
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+input,
+textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+/* Button Styles */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s;
+}
+
+.btn i {
+    margin-right: 5px;
+}
+
+.btn-primary {
+    background-color: #3498db;
+    color: #fff;
+}
+
+.btn-primary:hover {
+    background-color: #2980b9;
+}
+
+.btn-danger {
+    background-color: #e74c3c;
+    color: #fff;
+}
+
+.btn-danger:hover {
+    background-color: #c0392b;
+}
+
+.btn-outline {
+    background-color: transparent;
+    border: 1px solid #3498db;
+    color: #3498db;
+}
+
+.btn-outline:hover {
+    background-color: #3498db;
+    color: #fff;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    /* .dashboard {
+        flex-direction: column;
+    } */
+
+    .sidebar {
+        position:absolute;
+        min-width: 250px;
+        transform:translateX(-100%);
+        height:100vh;
+        transition: all 200ms ease-in-out;
+    }
+
+    .content {
+        order: 1;
+    }
+
+    /* .sidebar-nav {
+        display: flex;
+        justify-content: space-around;
+    }
+
+    .sidebar-nav a {
+        flex-direction: column;
+        text-align: center;
+        padding: 10px;
+    }
+
+    .sidebar-nav a i {
+        margin-right: 0;
+        margin-bottom: 5px;
+    } */
+}
+
+#avatarurl{
+    display:none;
+}
+
+
+.pptopbarmob{
+    display:flex;
+    align-items:center;
+    /* justify-content:center; */
+}
+
+.gplogo{
+    flex-grow:1;
+    text-align:center;
+}
+
+.sidebartopmob{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+}
+
+@media (min-width: 768px){
+    .sidebartopmob{
+        display:none;
+    }
+
+    .ppmobham{
+        display:none;
+        
+    }
+}

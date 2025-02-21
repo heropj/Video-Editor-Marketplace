@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Dashboard</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <div class="dashboard">
+        <aside class="sidebar">
+            <div class="sidebartopmob" >
+                <div class="gplogo" style="text-align:start;">
+                    <img src="/images/gplogo.png" width="120px">
+                </div>
+                <div class="ppcutham" style="margin-right:8px;">
+                    <img src="/images/cross.svg" width='30px'>
+                </div>
+            </div>
+            <div class="sidebar-header">
+               
+                <div class="avatar">
+                    <img src="<%= user.avatarurl %>" alt="User" class="avatar-image">
+                </div>
+                <h2 class="sidebar-username"><%= user.fullName%></h2>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="#" data-page="dashboard" class="active"><i data-lucide="layout-dashboard"></i> Home</a></li>
+                    <li><a href="#" data-page="profile"><i data-lucide="user"></i> Profile</a></li>
+                    <li><a href="#" data-page="favourites"><i data-lucide="heart"></i> favourites</a></li>
+                    <li><a href="#" data-page="past-orders"><i data-lucide="shopping-bag"></i> Past Orders</a></li>
+                    <!-- <li><a href="#" data-page="explore"><i data-lucide="compass"></i> Explore</a></li> -->
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <button class=" btn btn-danger btn-logout"><i data-lucide="log-out"></i> Logout</button>
+            </div>
+        </aside>
+        <main class="content">
+            <div class="pptopbarmob">
+                <div class="ppmobham">
+                    <img src="https://www.svgrepo.com/show/506800/burger-menu.svg" width='30px'>
+                </div>
+                <div class="gplogo">
+                    <img src="https://gropromedia.co/wp-content/uploads/2024/09/cropped-Logo-Type-Hori-Alt.png" width="120px">
+                </div>
+            </div>
+            <div id="dashboard-page" class="page active">
+                <!-- <h1>Welcome to Your Dashboard</h1>
+                <div class="dashboard-cards">
+                    <div class="card">
+                        <h2>Total Orders</h2>
+                        <p class="card-value">42</p>
+                    </div>
+                    <div class="card">
+                        <h2>Total Spent</h2>
+                        <p class="card-value">$1,234.56</p>
+                    </div>
+                    <div class="card">
+                        <h2>Loyalty Points</h2>
+                        <p class="card-value">500</p>
+                    </div>
+                </div> -->
+                <%- include('reelsss') %>
+            </div>
+            <div id="profile-page" class="page">
+                <div class="card profile-card">
+                    <div class="card-header">
+                        <h2>Hello, <%= user.fullName%></h2>
+                    </div>
+                    <div class="card-content">
+                        <form id="profile-form">
+                            <div class="avatar-section">
+                                <div class="avatar large">
+                                    <img src="<%= user.avatarurl %>" alt="User" class="avatar-image">
+                                </div>
+                                <input type="text" id='avatarurl' name='avatarurl' placeholder="enter profile avatar url">
+                                <button type="button" class="btn btn-outline changeavatarbtn" style="margin-bottom: 24px;">Change Avatar</button>
+                            </div>
+                            <div class="form-group">
+                                <label for="username">Username</label>
+                                <input type="text" id="username" name="username" value="<%= user.userName %>" disabled>
+                            </div>
+                            <div class="form-group">
+                                <label for="name">Name</label>
+                                <input type="text" id="name" name="name" value="<%= user.fullName %>" disabled>
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email</label>
+                                <input type="email" id="email" name="email" value="<%= user.email %>" disabled>
+                            </div>
+                            <div class="form-group">
+                                <label for="phone">Phone</label>
+                                <input type="tel" id="phone" name="phone" value="+1 (555) 123-4567" disabled>
+                            </div>
+                            <!-- <div class="form-group">
+                                <label for="bio">Bio</label>
+                                <textarea id="bio" name="bio" rows="4" disabled>I'm a software developer with a passion for creating intuitive user experiences.</textarea>
+                            </div> -->
+                        </form>
+                    </div>
+                    <div class="card-footer">
+                        <button id="edit-profile" class="btn btn-primary">Edit Profile</button>
+                        <button type="submit" id="save-profile" class="btn btn-primary" style="display: none;">Save Changes</button>
+                        <button id="cancel-edit" class="btn btn-outline" style="display: none;">Cancel</button>
+                    </div>
+                </div>
+            </div>
+            <div id="favourites-page" class="page">
+                <%- include('favourites') %>
+            </div>
+            <div id="past-orders-page" class="page">
+                <!-- <h1>Past Orders</h1> -->
+                <!-- <div class="order-cards">
+                    <div class="card order-card">
+                        <h2>Order #1</h2>
+                        <video src="https://media.istockphoto.com/id/1286682513/video/speech-bubble.mp4?s=mp4-640x640-is&k=20&c=WCohzI6-QCrqi6L-DFwDSJ4uURmFEHsJL6aQsTKIxMM=" controls width='100%'></video>
+                        <p>Date: 2023-05-15</p>
+                        <p>Amount: $99.99</p>
+                        <p>Status: Delivered</p>
+                    </div>
+                    <div class="card order-card">
+                        <h2>Order #2</h2>
+                        <video src="https://media.istockphoto.com/id/1223681052/video/dynamic-top-story-transition-and-title-page-animation.mp4?s=mp4-640x640-is&k=20&c=p9_GPsM1I09Fchui3zA_kR1-DRUVGbuaG1rAUGlbipE=" controls width='100%'></video>
+                        <p>Date: 2023-06-01</p>
+                        <p>Amount: $149.99</p>
+                        <p>Status: Processing</p>
+                    </div>
+                </div> -->
+                <%- include('pastorders') %>
+                
+            </div>
+            <div id="explore-page" class="page">
+                <h1>Explore</h1>
+                <%- include('editorprofile')  %>
+                <!-- <div class="explore-cards">
+                    <div class="card">
+                        <h2>New Product 1</h2>
+                        <p>Check out our latest offering!</p>
+                    </div>
+                    <div class="card">
+                        <h2>Special Discount</h2>
+                        <p>Limited time offer on select items.</p>
+                    </div>
+                    <div class="card">
+                        <h2>Upcoming Event</h2>
+                        <p>Join us for an exclusive online event.</p>
+                    </div>
+                </div> -->
+            </div>
+        </main>
+    </div>
+    <script src="/script/script.js"></script>
+</body>
+
+<script>
+    const logButton=document.querySelector('.btn-logout')
+    logButton.addEventListener('click', ()=>{
+        window.location.href = '/user/logout'
+    })
+</script>
+
+<script>
+    // document.getElementById('profile-form').addEventListener('submit', function(e){
+    //     e.preventDefault;
+    //     console.log("form submitted..")
+
+    //     sendnewdata();
+    // })
+
+    document.getElementById('save-profile').addEventListener('click', ()=>{
+        console.log("submitted..")
+
+        sendnewdata();
+    })
+
+    async function sendnewdata(){
+        const newfullName=document.querySelector('#name').value;
+        const newemail=document.querySelector('#email').value;
+        const newphone=document.querySelector('#phone').value;
+        const newusername=document.querySelector('#username').value;
+
+        try {
+            const response = await fetch('/user/updateinfo', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ newfullName, newusername, newphone }) // Convert form data to JSON
+            });
+            if (response.ok) {
+                const result = await response.json();
+                console.log(result)
+                if (response.status === 201) {
+                    // Redirect to success page
+                    window.location.href = '/user';
+                } 
+            } else {
+                const result = await response.json();
+                console.log(result)
+                // console.log(result.message)
+                // const loginButton=document.getElementById('edit-profile')
+                // showError(loginButton, result.message)
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+
+
+/*CHANGE AVATAR IMG (BY URL)*/
+    document.querySelector('.changeavatarbtn').addEventListener('click', ()=>{
+        if(document.querySelector('.changeavatarbtn').innerHTML=='save changes'){
+            document.querySelector('.changeavatarbtn').innerHTML='Change Avatar';
+            document.querySelector('#avatarurl').style.display='none';
+
+            sendavatarurl();
+        }
+        else{
+            document.querySelector('#avatarurl').style.display='block';
+            document.querySelector('.changeavatarbtn').innerHTML='save changes'
+        }
+    });
+
+    async function sendavatarurl(){
+
+        const newavatarurl=document.querySelector('#avatarurl').value
+        try {
+            const response = await fetch('/user/updateavatar', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ newavatarurl }) // Convert form data to JSON
+            });
+            window.location.reload();
+            if (response.ok) {
+                const result = await response.json();
+                console.log(result)
+                if (response.status === 201) {
+                    console.log("sucessfully updated url")
+                    window.location.reload();
+                } 
+            } else {
+                const result = await response.json();
+                console.log(result)
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+    
+</script>
+
+<script>
+    /*hamb*/
+
+    document.querySelector('.ppmobham').addEventListener('click', ()=>{
+        document.querySelector('.sidebar').style.transform='translateX(0)';
+    })
+
+    document.querySelector('.ppcutham').addEventListener('click', ()=>{
+        document.querySelector('.sidebar').style.transform='translateX(-100%)'
+    })
+</script>
+</html>

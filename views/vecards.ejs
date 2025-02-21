@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Cards</title>
+    <style>
+        .vec-container{
+            font-family: monospace;
+        }
+        .vec-container{
+            max-width: 1200px;
+            display: flex;
+            padding: 24px;
+            justify-content: center;
+        }
+        .vec-cardcontainer {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .vec-card {
+            background: white;
+            padding: 12px 0px 0px 12px;
+            /* padding: 24px; */
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: left;
+            width: 180px;
+        }
+        .vec-card{
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+
+            position: relative;
+        }
+        .vec-title {
+            font-size: 20px;
+            margin-left: 32px;
+            font-weight: bold;
+            color: black;
+            z-index: 1;
+        }
+        .vec-value {
+            position: absolute;
+            /* border: 1px solid black; */
+            width: calc(100% - 40px);
+            height: calc(100% - 40px);
+            display: flex;
+            align-items: center;
+            justify-content: start;
+
+            top: 16px;
+
+            font-size: 132px;
+            font-weight: bold;
+
+
+            color: rgba(255, 255, 255, 0.801);
+        }
+
+        .vec-card:nth-child(1):hover .vec-value {
+            text-shadow: 
+            -2px -2px 0 red,
+            2px -2px 0 red,  
+            -2px  2px 0 red, 
+            2px  2px 0 red;
+
+            font-size: 72px;
+        }
+        .vec-card:nth-child(2):hover .vec-value {
+            text-shadow: 
+            -2px -2px 0 #99cd32,
+            2px -2px 0 #99cd32,  
+            -2px  2px 0 #99cd32, 
+            2px  2px 0 #99cd32;
+
+            font-size: 72px;
+        }
+        .vec-card:nth-child(3):hover .vec-value {
+            text-shadow: 
+            -2px -2px 0 green,
+            2px -2px 0 green,  
+            -2px  2px 0 green, 
+            2px  2px 0 green;
+
+            font-size: 72px;
+        }
+        .vec-card:nth-child(4):hover .vec-value {
+            text-shadow: 
+            -2px -2px 0 yellow,
+            2px -2px 0 yellow,  
+            -2px  2px 0 yellow, 
+            2px  2px 0 yellow;
+
+            font-size: 72px;
+        }
+
+        @media (max-width: 498px) {
+            .vec-card {
+                width: 120px;
+                padding: 8px 0px 0px 8px;
+            }
+            .vec-title {
+                font-size: 12px;
+            }
+            .vec-value {
+                font-size: 72px;
+            }
+
+        }
+    </style>
+</head>
+<body>
+    <div class="vec-container">
+        <div class="vec-cardcontainer">
+            <div class="vec-card" style="background-color: rgba(255, 0, 0, 0.7)">
+                <div class="vec-title">Pending<br>Confirmation</div>
+                <div class="vec-value">2</div>
+            </div>
+            <div class="vec-card" style="background-color:rgba(153, 205, 50, 0.7);">
+                <div class="vec-title" >Ongoing<br>Projects</div>
+                <div class="vec-value">3</div>
+            </div>
+            <div class="vec-card"  style="background-color:  rgba(0, 128, 0, 0.6);">
+                <div class="vec-title">Completed<br>Projects</div>
+                <div class="vec-value">7</div>
+            </div>
+            <div class="vec-card" style="background-color: rgba(255, 255, 0, 0.6);">
+                <div class="vec-title">Video<br>Samples</div>
+                <div class="vec-value">9</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

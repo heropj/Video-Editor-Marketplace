@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Editor Profile</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #fafafa;
+        }
+
+        .profile-container {
+            max-width: 935px;
+            margin: 30px auto;
+            padding: 20px;
+        }
+
+        .profile-header {
+            display: flex;
+            gap: 80px;
+            margin-bottom: 44px;
+        }
+
+        .profile-image img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .profile-info {
+            flex: 1;
+        }
+
+        .profile-info h1 {
+            font-size: 28px;
+            margin-bottom: 12px;
+        }
+
+        .bio {
+            color: #262626;
+            margin-bottom: 20px;
+        }
+
+        .follow-btn {
+            background-color: #0095f6;
+            color: white;
+            border: none;
+            padding: 5px 24px;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .stats-container {
+            display: flex;
+            gap: 40px;
+            margin-bottom: 20px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat .number {
+            font-size: 18px;
+            font-weight: 600;
+            display: block;
+        }
+
+        .stat .label {
+            color: #8e8e8e;
+            font-size: 14px;
+        }
+
+        /* Updated Videos Grid Styling */
+        .videos-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2px;
+            max-width: 935px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .video-item {
+            position: relative;
+            aspect-ratio: 1;
+            cursor: pointer;
+            background: #000;
+            display: flex;
+        }
+
+        .video-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .video-info {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 10px;
+            background: linear-gradient(transparent, rgba(0,0,0,0.7));
+            color: white;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .video-item:hover .video-info {
+            opacity: 1;
+        }
+
+        /* Updated Modal Styling */
+        .video-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: black;
+            z-index: 1000;
+        }
+
+        .video-modal.active {
+            display: block;
+        }
+
+        .video-player-container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            background: black;
+        }
+
+        #videoPlayer {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .video-controls {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 20px;
+            color: white;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px;
+        }
+
+        .back-btn::before {
+            content: "←";
+            font-size: 24px;
+        }
+
+        .action-buttons {
+            position: absolute;
+            right: 20px;
+            bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .action-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        .action-btn:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .action-btn.like-btn.active {
+            color: #ff2d55;
+        }
+
+        @media (max-width: 768px) {
+            .profile-header {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+
+            .stats-container {
+                justify-content: center;
+            }
+
+            .videos-grid {
+                padding: 0;
+                gap: 1px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Profile Section -->
+    <div class="profile-container">
+        <div class="profile-header">
+            <div class="profile-image">
+                <img src="https://media.istockphoto.com/id/1130842565/vector/hacker-at-laptop-icon-flat-illustration-of-hacker-at-laptop-vector-icon-for-web-design.jpg?s=1024x1024&w=is&k=20&c=daY-lKalbBvYw79hRN9UCFuFr7t-_4i7oTJmbZbSGjI=" alt="Profile Picture">
+            </div>
+            <div class="profile-info">
+                <h1>...</h1>
+                <p class="bio">...</p>
+            </div>
+        </div>
+        
+        <div class="stats-container">
+            <div class="stat">
+                <span class="number">124</span>
+                <span class="label">Videos Edited</span>
+            </div>
+            <div class="stat">
+                <span class="number">98</span>
+                <span class="label">Orders Delivered</span>
+            </div>
+            <div class="stat">
+                <span class="number">4.9</span>
+                <span class="label">Rating</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Videos Grid -->
+    <h2 style="text-align: center; margin-bottom: 20px;">Editor ke samples videos</h2>
+    <div class="videos-grid">
+        <!-- Repeat this block for each video -->
+        <div class="video-item" onclick="openVideoPlayer(1)">
+            <video src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4">
+            <div class="video-info">
+                <span class="views">7 orders</span>
+            </div>
+        </div>
+        <div class="video-item" onclick="openVideoPlayer(2)">
+            <img src="" alt="Video Thumbnail">
+            <div class="video-info">
+                <span class="views">2 orders</span>
+            </div>
+        </div>
+        <div class="video-item" onclick="openVideoPlayer(3)">
+            <img src="" alt="Video Thumbnail">
+            <div class="video-info">
+                <span class="views">5 order</span>
+            </div>
+        </div>
+        <div class="video-item" onclick="openVideoPlayer(3)">
+            <img src="" alt="Video Thumbnail">
+            <div class="video-info">
+                <span class="views">4 orders</span>
+            </div>
+        </div>
+        
+        <!-- Add more video items as needed -->
+    </div>
+
+    <!-- Video Player Modal -->
+    <div class="video-modal" id="videoModal">
+        <div class="video-player-container">
+            <button class="back-btn" onclick="closeVideoPlayer()">Back</button>
+            <video id="videoPlayer" src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"></video>
+            <div class="video-controls">
+                <div class="video-info">
+                    <h3 class="video-title">webd</h3>
+                    <p class="video-description">hello</p>
+                    <p class="video-price">$89</p>
+                </div>
+                <div class="action-buttons">
+                    <button class="action-btn like-btn">
+                        <span class="icon">❤️</span>
+                    </button>
+                    <button class="action-btn">
+                        <span class="icon">🛒</span>
+                    </button>
+                    <button class="action-btn">
+                        <span class="icon">↗️</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+    <script>
+        let video;
+        function openVideoPlayer(videoId) {
+    const modal = document.getElementById('videoModal');
+    const videoPlayer = document.getElementById('videoPlayer');
+
+    // ✅ Find the video object that matches the given videoId
+    const selectedVideo = videos.find(v => v._id === videoId);
+    
+    if (!selectedVideo) {
+        console.error("Video not found for ID:", videoId);
+        return;
+    }
+
+    console.log("Playing Video URL:", selectedVideo.videoUrl);
+    
+    // ✅ Set the video player source
+    videoPlayer.src = selectedVideo.videoUrl;
+    
+    modal.classList.add('active');
+    videoPlayer.play();
+    document.body.style.overflow = 'hidden';
+
+    // Add slide-up animation class
+    modal.style.animation = 'slideUp 0.3s ease-out';
+}
+
+        function closeVideoPlayer() {
+            const modal = document.getElementById('videoModal');
+            const videoPlayer = document.getElementById('videoPlayer');
+            
+            modal.classList.remove('active');
+            videoPlayer.pause();
+            document.body.style.overflow = '';
+        }
+
+        // Handle like button
+        document.querySelector('.like-btn').addEventListener('click', function(e) {
+            e.stopPropagation();
+            this.classList.toggle('active');
+        });
+
+        // Add touch swipe to close functionality for mobile
+        let touchStartY = 0;
+        let touchEndY = 0;
+
+        document.querySelector('.video-player-container').addEventListener('touchstart', (e) => {
+            touchStartY = e.touches[0].clientY;
+        });
+
+        document.querySelector('.video-player-container').addEventListener('touchmove', (e) => {
+            touchEndY = e.touches[0].clientY;
+        });
+
+        document.querySelector('.video-player-container').addEventListener('touchend', () => {
+            if (touchEndY - touchStartY > 100) { // If swiped down more than 100px
+                closeVideoPlayer();
+            }
+            touchStartY = 0;
+            touchEndY = 0;
+        });
+        
+    // ✅ New script to fetch editor data and videos dynamically
+
+    async function fetchEditorData() {
+        try {
+            // Fetch editor details
+            const userResponse = await fetch('/api/userinfo',{
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            
+            });
+            const [user] = await userResponse.json();
+            console.log("Editor Data:", user);
+
+            // Fetch all videos of this editor
+            const videosResponse = await fetch(`/api/videos?owner=${user._id}`);
+            videos = await videosResponse.json();
+            console.log("Videos Data:", videos);
+
+            // Update Profile Section
+            
+            document.querySelector('.profile-info h1').textContent = user.fullName;
+            document.querySelector('.profile-info .bio').textContent = user.bio || "Professional Video Editor";
+            document.querySelector('.profile-image img').src = user.avatarurl || "default-profile.png";
+            document.querySelector('.stats-container .stat:nth-child(1) .number').textContent = videos.length;
+            document.querySelector('.stats-container .stat:nth-child(2) .number').textContent = user.ordersDelivered || 0;
+            document.querySelector('.stats-container .stat:nth-child(3) .number').textContent = user.rating || "N/A";
+
+            // Populate Videos Grid
+            const videosGrid = document.querySelector('.videos-grid');
+            videosGrid.innerHTML = ""; // Clear existing placeholder content
+
+            videos.forEach(video => {
+                const videoItem = document.createElement("div");
+                videoItem.classList.add("video-item");
+                videoItem.setAttribute("onclick", `openVideoPlayer('${video._id}')`);
+
+                videoItem.innerHTML = `
+                    <video src="${video.videoUrl || 'default-thumbnail.jpg'}" alt="Video Thumbnail" style="width:100%; object-fit:cover"></video>
+                    <div class="video-info">
+                        <span class="views">${video.views || 0} orders</span>
+                    </div>
+                `;
+
+                videosGrid.appendChild(videoItem);
+            });
+        } catch (error) {
+            console.error("Error fetching editor data:", error);
+        }
+    }
+
+    fetchEditorData(); // Call function to fetch and populate data
+    </script>
+
+</html>

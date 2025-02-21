@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Past Orders - Video Editors Marketplace</title>
+    <style>
+
+        .venw-pocontainer {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 12px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 24px;
+        }
+
+        .venw-orders-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        /* .venw-order-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: transform 0.2s;
+        }
+
+        .venw-order-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .venw-order-image {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+            background-color: #f0f0f0;
+        }
+
+        .venw-order-content {
+            padding: 12px;
+        }
+
+        .venw-editor-name {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .venw-order-price {
+            font-size: 16px;
+            font-weight: 700;
+            color: #2d2d2d;
+        }
+
+        .venw-order-details {
+            display: flex;
+            justify-content: space-between;
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 2px;
+        }
+
+        .venw-order-status {
+            display: inline-block;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .venw-status-completed {
+            background-color: #e6f4ea;
+            color: #1e7e34;
+        }
+
+        .venw-status-in-progress {
+            background-color: #fff3e0;
+            color: #e65100;
+        }
+
+        .venw-order-date {
+            color: #888;
+            font-size: 13px;
+        }
+
+        .venw-filter-bar {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .venw-filter-button {
+            padding: 8px 16px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            background: white;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .venw-filter-button:hover {
+            background: #f5f5f5;
+        }
+
+        .venw-filter-button.active {
+            background: #333;
+            color: white;
+            border-color: #333;
+        }
+
+        .venw-editorprofilelink {
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+            text-decoration: none;
+        }
+        .venw-editorprofilelink:hover {
+            text-decoration: underline;
+            color: #e65100;
+        } */
+
+        @media (max-width: 768px) {
+            .venw-orders-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .venw-filter-bar {
+                overflow-x: auto;
+                padding-bottom: 10px;
+            }
+        }
+    </style>
+
+    <style>
+
+.venw-order-card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    overflow: hidden;
+    transition: transform 0.2s;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+}
+
+.venw-order-card:hover {
+    transform: translateY(-2px);
+}
+
+.venw-order-content {
+    padding: 12px;
+}
+
+.venw-client-name {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+}
+
+.venw-order-price {
+    font-size: 16px;
+    font-weight: 700;
+    color: #2d2d2d;
+}
+
+.venw-order-details {
+    display: flex;
+    justify-content: space-between;
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 6px;
+}
+
+.venw-order-status {
+    display: inline-block;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 4px 8px;
+}
+
+.venw-status-placed {
+    background-color: #ffebee;
+    color: #d32f2f;
+}
+
+.venw-status-processing {
+    background-color: #fff3e0;
+    color: #e65100;
+}
+
+.venw-status-completed {
+    background-color: #e6f4ea;
+    color: #1e7e34;
+}
+
+.venw-payment-mode {
+    font-size: 13px;
+    font-weight: 500;
+    color: #444;
+}
+
+.venw-order-message {
+    background: #f9f9f9;
+    padding: 8px 0px;
+    border-radius: 5px;
+    margin-top: 8px;
+    font-size: 14px;
+    color: #444;
+}
+
+.venw-order-date {
+    color: #888;
+    font-size: 13px;
+}
+
+.venw-accept-btn {
+    background: #e65100;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.venw-accept-btn:hover {
+    background: #bf360c;
+}
+
+.venw-video-link {
+    color: #1976d2;
+    text-decoration: none;
+}
+
+.venw-video-link:hover {
+    text-decoration: underline;
+}
+
+    </style>
+</head>
+<body>
+    <div class="venw-pocontainer">
+        <h1>New Orders</h1>
+
+        <div class="venw-orders-grid" id="venw-ordersGrid">
+            <!-- Orders will be populated by JavaScript -->
+        </div>
+    </div>
+
+    <script>
+
+        // Fetch orders from API
+        let venwNewOrders = [];
+        async function fetchNewOrders() {
+            try {
+                const response = await fetch('/orders')
+                const orderData = await response.json();
+                console.log("Orders fetched:", orderData);
+
+                venwNewOrders = orderData.map((order, index) => ({
+                    id: order._id,  // Assigning sequential ID
+                    editorId: order.editorId._id,
+                    editorName: order.editorId.userName,
+                    clientId: order.userId._id,
+                    clientName: order.userId.userName,
+                    messageByClient: order.messageByClient,
+                    clientVideoLink: order.clientVideoLink,
+                    editorAvatar: order.editorId.avatarurl, 
+                    price: order.amount, 
+                    projectTitle: order.projectTitle,
+                    status: order.orderStatus,
+                    paymentStatus: order.paymentStatus,
+                    date: order.createdAt,
+                    videoUrl: order.videoId.videoUrl || "https://media.istockphoto.com/id/2194184235/video/cyber-defense-powered-by-ai-the-end-of-hacking-headline-newspaper-title.mp4?s=mp4-640x640-is&k=20&c=fALDwOdpsl3iBSkyB8hCZtfPkAq2NNbNxr3rxZt_-LM=" , // Default empty video URL
+                }));
+
+                renderNewOrders();
+            } catch (error) {
+                console.error("Error fetching orders:", error);
+            }
+        }
+
+        fetchNewOrders();
+
+        // Function to create order cards
+        function createNewOrderCard(order) {
+            return `
+<div class="venw-order-card" data-status="${order.status || "No"}">
+    <video class="card-video order-image" src="${order.videoUrl}" muted loop autoplay></video>
+    <div class="venw-order-content">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <div class="venw-client-name">${order.clientName || "No"}</div>
+            <div class="venw-order-price">$${order.price.toFixed(2) || "No"}</div>
+        </div>
+
+        <div class="venw-order-details">
+            <span class="venw-order-status venw-status-${order.status || "No"}">
+                ${order.status || "No"}
+            </span>
+            <span class="venw-payment-mode">Payment: ${order.paymentStatus || "No"}</span>
+        </div>
+
+        <div class="venw-order-message">
+            <strong>Message by Client:</strong>
+            <p>${order.messageByClient || "No message provided."}</p>
+        </div>
+
+        <div style="display: flex; justify-content: space-between;">
+            <div class="venw-order-date">Ordered on: ${new Date(order.date).toLocaleDateString()}</div>
+            <button onClick="acceptOrder('${order.id || "No"}')" class="venw-accept-btn">Accept</button>  
+        </div>
+
+        <div class="venw-order-video">
+            <strong>Client's Video:</strong>
+            <a href="${order.clientVideoLink || "No"}" target="_blank" class="venw-video-link">View Video</a>
+        </div>
+    </div>
+</div>
+
+            `;
+        }
+
+        // Function to render orders
+        function renderNewOrders() {
+            const venwOrdersGrid = document.getElementById('venw-ordersGrid');
+            const filteredNewOrders = venwNewOrders.filter(order => (order.status) === 'placed');
+            
+            venwOrdersGrid.innerHTML = filteredNewOrders.map(createNewOrderCard).join('');
+        }
+
+        async function acceptOrder(orderId){
+            console.log("ohh orderid: ",orderId)
+            try {
+                const resp=await fetch('/api/acceptorder', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ orderId }) // Convert form data to JSON
+                });
+            } catch (error) {
+                console.log("error in /api/acceptorder...: ", error)
+            }
+        }
+
+    </script>
+</body>
+</html>

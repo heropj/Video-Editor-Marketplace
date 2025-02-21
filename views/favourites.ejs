@@ -1,0 +1,56 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liked Videos</title>
+</head>
+<body>
+    <h2>Liked Videos</h2>
+    <ul id="favsList"></ul>
+</body>
+
+<script>
+    let favs = [];
+
+    async function getfavs() {
+        try {
+            const response = await fetch('/api/like');
+            const favsData = await response.json();
+            console.log("favs fetched:", favsData);
+
+            favs = favsData.map(video => ({
+                title: video.videoId.title,  
+                videoUrl: video.videoId.videoUrl  
+            }));
+
+            renderFavs();
+        } catch (error) {
+            console.error("Error fetching liked videos:", error);
+        }
+    }
+
+    function renderFavs() {
+        const favsList = document.getElementById("favsList");
+        favsList.innerHTML = "";
+
+        if (favs.length === 0) {
+            favsList.innerHTML = "<li>No liked videos found.</li>";
+            return;
+        }
+
+        favs.forEach(video => {
+            const listItem = document.createElement("li");
+            listItem.innerHTML = `
+                <strong>${video.title}</strong> <br>
+                <video width="300" controls>
+                    <source src="${video.videoUrl}" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            `;
+            favsList.appendChild(listItem);
+        });
+    }
+
+    getfavs(); 
+</script>
+</html>

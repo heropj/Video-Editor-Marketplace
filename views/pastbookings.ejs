@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Past Orders - Video Editors Marketplace</title>
+    <style>
+
+        .pocontainer {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 12px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 24px;
+        }
+
+        .orders-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .order-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: transform 0.2s;
+        }
+
+        .order-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .order-image {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+            background-color: #f0f0f0;
+        }
+
+        .order-content {
+            padding: 12px;
+        }
+
+        .editor-name {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .order-price {
+            font-size: 16px;
+            font-weight: 700;
+            color: #2d2d2d;
+        }
+
+        .order-details {
+            display: flex;
+            justify-content: space-between;
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 2px;
+        }
+
+        .order-status {
+            display: inline-block;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .status-completed {
+            background-color: #e6f4ea;
+            color: #1e7e34;
+        }
+
+        .status-in-progress {
+            background-color: #fff3e0;
+            color: #e65100;
+        }
+
+        .order-date {
+            color: #888;
+            font-size: 13px;
+        }
+
+        .filter-bar {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .filter-button {
+            padding: 8px 16px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            background: white;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .filter-button:hover {
+            background: #f5f5f5;
+        }
+
+        .filter-button.active {
+            background: #333;
+            color: white;
+            border-color: #333;
+        }
+
+        .editorprofilelink{
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+            text-decoration: none;
+        }
+        .editorprofilelink:hover{
+            text-decoration: underline;
+            color: #e65100;
+        }
+
+        @media (max-width: 768px) {
+            .orders-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .filter-bar {
+                overflow-x: auto;
+                padding-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="pocontainer">
+        <h1>Past Bookings</h1>
+        
+        <div class="filter-bar">
+            <button class="filter-button active" data-filter="all">All Orders</button>
+            <button class="filter-button" data-filter="processing">In Progress</button>
+            <button class="filter-button" data-filter="completed">Completed</button>
+            <button class="filter-button" data-filter="cancelled">Cancelled</button>
+        </div>
+
+        <div class="orders-grid" id="ordersGrid">
+            <!-- Orders will be populated by JavaScript -->
+        </div>
+    </div>
+
+    <script>
+
+        // Fetch orders from API
+        let orders = [];
+        async function fetchOrders() {
+    try {
+        const response = await fetch('/orders')
+        const orderData = await response.json();
+        console.log("Orders fetched:", orderData);
+
+        orders = orderData.map((order, index) => ({
+            id: index + 1,  // Assigning sequential ID
+            editorId: order.editorId._id,
+            editorName: order.editorId.userName,
+            editorAvatar: order.editorId.avatarurl, 
+            price: order.amount, 
+            projectTitle: order.projectTitle,
+            status: order.orderStatus,
+            date: order.createdAt,
+            videoUrl: order.videoId.videoUrl || "https://media.istockphoto.com/id/2194184235/video/cyber-defense-powered-by-ai-the-end-of-hacking-headline-newspaper-title.mp4?s=mp4-640x640-is&k=20&c=fALDwOdpsl3iBSkyB8hCZtfPkAq2NNbNxr3rxZt_-LM=" , // Default empty video URL
+        }));
+
+        renderOrders();
+    } catch (error) {
+        console.error("Error fetching orders:", error);
+    }
+}
+
+        fetchOrders();
+
+        // Function to create order cards
+        function createOrderCard(order) {
+            return `
+                <div class="order-card" data-status="${order.status}">
+                    <video class="card-video order-image" src="${order.videoUrl}" muted loop autoplay></video>
+                    <div class="order-content">
+                        <div style="display: flex; justify-content: space-between; align-items: center;margin-bottom: 12px;">
+                            <a href='/editor?eid=${order.editorId}' class='editorprofilelink'>
+                                <img src="${order.editorAvatar}" alt="${order.editorName}" style="width: 25px; height: 25px; border-radius: 50%;">
+                                <span class="editor-name">${order.editorName}</span>
+                            </a>
+                            <div class="order-price">$${order.price.toFixed(2)}</div>
+                        </div>
+                        <div class="order-details">
+                            <span class="order-status status-${order.status}">
+                                ${order.status}
+                            </span>
+                        </div>
+                        <div class="order-date">Ordered on ${new Date(order.date).toLocaleDateString()}</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Function to render orders
+        function renderOrders(filterStatus = 'all') {
+            const ordersGrid = document.getElementById('ordersGrid');
+            const filteredOrders = filterStatus === 'all' 
+                ? orders 
+                : orders.filter(order => (order.status) === filterStatus);
+            
+            ordersGrid.innerHTML = filteredOrders.map(createOrderCard).join('');
+        }
+
+        // Add filter functionality
+        document.querySelector('.filter-bar').addEventListener('click', (e) => {
+            if (e.target.classList.contains('filter-button')) {
+                // Update active state
+                document.querySelectorAll('.filter-button').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                e.target.classList.add('active');
+
+                // Filter orders
+                renderOrders(e.target.dataset.filter);
+            }
+        });
+
+        // Initial render
+        //yaha nahi fetch-order me, why??
+
+    </script>
+</body>
+</html>

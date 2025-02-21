@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Editor Portfolio</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .vepcontainer {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #2a2a2a;
+        }
+
+        .vepcard-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            gap: 12px;
+        }
+
+        .vepcard {
+            background-color: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            width: 100%;
+            max-width: 240px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+
+            display: flex;
+            flex-direction:column;
+        }
+
+        .vepcard:hover {
+            transform: translateY(-5px);
+        }
+
+        .vepcard-video {
+            width: 100%;
+            aspect-ratio: 16/9;
+            object-fit: cover;
+        }
+
+        .vepcard-content {
+            padding: 8px 16px;
+
+            display: flex;
+            flex-direction: column;
+            flex-grow:1;
+        }
+
+        .vepcard-title {
+            font-size: 1.2rem;
+            color: #2a2a2a;
+        }
+
+        .vepcard-price {
+            font-size: 1.1rem;
+            color: #212121;
+        }
+
+        .vepcard-desc {
+            font-size: 0.9rem;
+            color: #555555;
+
+            flex-grow: 1;
+        }
+
+        .vepcard-stats {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            color: #777777;
+        }
+
+        .vepcard-stat {
+            display: flex;
+            align-items: center;
+        }
+
+        .vepcard-stat i {
+            margin-right: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .vepcard {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="vepcontainer">
+        <h2>Your Videos (yaha ongoing Projects/ New orders)</h2>
+        <div class="vepcard-container" id="vepcardContainer"></div>
+    </div>
+</body>
+
+    <script>
+       
+        async function getvideos() {
+            const response = await fetch('/api/videos'); // Fetch videos from backend
+            const videos = await response.json(); // Parse JSON response
+            console.log(videos)
+            return videos
+            
+        }
+
+        async function loadVideos() {
+    const videos = await getvideos(); // Wait for the promise to resolve
+
+    const vidpp = videos.map(video => ({
+    videoUrl: video.videoUrl, // Assuming the API returns `url` field
+    title: video.title, // Assuming the API returns `title` field
+    description: video.description, // Assuming the API returns `description` field
+    category: video.category, // Assuming the API returns `category` field
+    price: video.price, // Assuming the API returns `price` field
+    _id:video._id,
+    bookings:10,
+    revenue:1000
+    }));
+
+    return vidpp; // Use this as needed
+}
+
+        let videoProjects = [];
+
+        function createCard(project) {
+            const card = document.createElement('div');
+            card.className = 'vepcard';
+
+            card.innerHTML = `
+                <video class="vepcard-video" src="${project.videoUrl}" muted loop></video>
+                <div class="vepcard-content">
+                    <h2 class="vepcard-title">${project.title}</h2>
+                    <p class="vepcard-price">$${project.price.toFixed(2)}</p>
+                    <p class="vepcard-desc">${project.category}</p>
+                    <div class="vepcard-stats">
+                        <div class="vepcard-stat">
+                            <i class="fas fa-calendar-check"></i>
+                            <span>${project.bookings} bookings</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            const video = card.querySelector('video');
+            card.addEventListener('mouseenter', () => video.play());
+            card.addEventListener('mouseleave', () => {
+                video.pause();
+                video.currentTime = 0;
+            });
+
+            return card;
+        }
+
+        function renderCards() {
+            const cardContainer = document.getElementById('vepcardContainer');
+            videoProjects.forEach(project => {
+                const card = createCard(project);
+                cardContainer.appendChild(card);
+            });
+        }
+
+        // renderCards();
+
+        async function initialize() {
+            videoProjects = await loadVideos(); // Fetch videos from the database
+            console.log("vidpp: ", videoProjects)
+            renderCards();
+        }
+        initialize();
+
+
+    </script>
+</html>
