@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Orders</title>
+  <style>
+
+    .prp-content {
+      flex: 1;
+      padding: 30px;
+      background-color: #f9f9f9;
+    }
+
+    .prp-content h1 {
+      margin-bottom: 20px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+    }
+
+    th, td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #ccc;
+    }
+
+    th {
+      background-color: #243447;
+      color: white;
+    }
+
+    .prp-total-revenue {
+      margin-top: 20px;
+      font-weight: bold;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+  <div class="prp-content">
+    <table id="ordersTable">
+      <thead>
+        <tr>
+          <th>Order ID</th>
+          <th>Owner</th>
+          <th>Client</th>
+          <th>Amount ($)</th>
+          <th>Date</th>
+          <th>Admin Revenue ($)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Filled by JS -->
+      </tbody>
+    </table>
+    <div class="prp-total-revenue" id="netRevenue">Net Revenue: $0</div>
+  </div>
+
+  <script>
+   async function fetchOrders() {
+  try {
+    const res = await fetch('/orders');
+    const data = await res.json();
+
+    const tableBody = document.querySelector("#ordersTable tbody");
+    let netRevenue = 0;
+
+    if (data.length === 0) {
+      const emptyRow = document.createElement("tr");
+      emptyRow.innerHTML = `
+        <td colspan="6" style="text-align:center; padding: 20px; color: #666;">No orders yet.</td>
+      `;
+      tableBody.appendChild(emptyRow);
+      return;
+    }
+
+    data.forEach(order => {
+      const revenue = (order.amount * 0.1).toFixed(2);
+      netRevenue += parseFloat(revenue);
+
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td style="max-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${order._id}">${order._id}</td>
+        <td>${order.editorId.fullName}</td>
+        <td>${order.userId.fullName}</td>
+        <td>$${order.amount.toFixed(2)}</td>
+        <td>${new Date(order.createdAt).toLocaleDateString()}</td>
+        <td>$${revenue}</td>
+      `;
+      tableBody.appendChild(row);
+    });
+
+    document.getElementById("netRevenue").textContent = `Net Revenue: $${netRevenue.toFixed(2)}`;
+  } catch (error) {
+    console.error("Failed to fetch orders:", error);
+  }
+}
+
+    fetchOrders();
+  </script>
+</body>
+</html>

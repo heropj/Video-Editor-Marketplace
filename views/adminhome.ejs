@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Dashboard</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+
+<!-- orders css -->
+<style>
+
+    .pocontainer {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 12px;
+    }
+
+    h1 {
+        color: #333;
+        margin-bottom: 30px;
+        font-size: 24px;
+    }
+
+    .orders-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 20px;
+    }
+
+    .order-card {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        overflow: hidden;
+        transition: transform 0.2s;
+    }
+
+    .order-card:hover {
+        transform: translateY(-2px);
+    }
+
+    .order-image {
+        width: 100%;
+        height: 160px;
+        object-fit: cover;
+        background-color: #f0f0f0;
+    }
+
+    .order-content {
+        padding: 12px;
+    }
+
+    .editor-name {
+        font-size: 20px;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .order-price {
+        font-size: 16px;
+        font-weight: 700;
+        color: #2d2d2d;
+    }
+
+    .order-details {
+        display: flex;
+        justify-content: space-between;
+        color: #666;
+        font-size: 14px;
+        margin-bottom: 2px;
+    }
+
+    .order-status {
+        display: inline-block;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 500;
+    }
+
+    .status-completed {
+        background-color: #e6f4ea;
+        color: #1e7e34;
+    }
+
+    .status-in-progress {
+        background-color: #fff3e0;
+        color: #e65100;
+    }
+
+    .order-date {
+        color: #888;
+        font-size: 13px;
+    }
+
+    .filter-bar {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    .filter-button {
+        padding: 8px 16px;
+        border: 1px solid #ddd;
+        border-radius: 20px;
+        background: white;
+        cursor: pointer;
+        font-size: 14px;
+        transition: all 0.2s;
+    }
+
+    .filter-button:hover {
+        background: #f5f5f5;
+    }
+
+    .filter-button.active {
+        background: #333;
+        color: white;
+        border-color: #333;
+    }
+
+    .editorprofilelink{
+        display: flex; 
+        align-items: center; 
+        gap: 8px; 
+        text-decoration: none;
+    }
+    .editorprofilelink:hover{
+        text-decoration: underline;
+        color: #e65100;
+    }
+
+    @media (max-width: 768px) {
+        .orders-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .filter-bar {
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+    }
+</style>
+
+<!-- ve css -->
+<style>
+    /* Container for all cards */
+    .nvecontainer {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    h1 {
+        font-size: 28px;
+        margin-bottom: 24px;
+        color: #000;
+    }
+
+    /* Card grid layout */
+    .editors-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 24px;
+    }
+
+    /* Individual card styling */
+    .editor-card {
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .editor-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-header {
+        padding: 16px;
+        display: flex;
+        align-items: center;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background-color: #e9ecef;
+        overflow: hidden;
+        margin-right: 16px;
+    }
+
+    .avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .user-info {
+        flex-grow: 1;
+    }
+
+    .full-name {
+        font-size: 18px;
+        font-weight: 600;
+        color: #000;
+        margin-bottom: 4px;
+    }
+
+    .username {
+        font-size: 14px;
+        color: #6c757d;
+    }
+
+    .card-body {
+        padding: 16px;
+    }
+
+    .info-item {
+        margin-bottom: 12px;
+        display: flex;
+        align-items: baseline;
+    }
+
+    .info-label {
+        font-size: 14px;
+        font-weight: 500;
+        color: #6c757d;
+        width: 100px;
+    }
+
+    .info-value {
+        font-size: 14px;
+        color: #000;
+        word-break: break-word;
+    }
+
+    .info-value.email {
+        color: #3498db; /* Blue accent for email */
+    }
+
+    .card-footer {
+        background-color: #f8f9fa;
+        padding: 12px 16px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 13px;
+        color: #6c757d;
+    }
+
+    .action-btn {
+        background-color: #3498db;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        padding: 8px 12px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: background-color 0.2s;
+    }
+
+    .action-btn:hover {
+        background-color: #2980b9;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .editors-grid {
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        }
+    }
+</style>
+
+<body>
+    <div class="dashboard">
+        <aside class="sidebar">
+            <div class="sidebartopmob" >
+                <div class="gplogo" style="text-align:start;">
+                    <img src="/images/gplogo.png" width="120px">
+                </div>
+                <div class="ppcutham" style="margin-right:8px;">
+                    <img src="/images/cross.svg" width='30px'>
+                </div>
+            </div>
+            <div class="sidebar-header">
+               
+                <div class="avatar">
+                    <img src="<%= user.avatarurl %>" alt="User" class="avatar-image">
+                </div>
+                <h2 class="sidebar-username"><%= user.fullName%></h2>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="#" data-page="dashboard" class="active"><i data-lucide="layout-dashboard"></i> Home</a></li>
+                    <li><a href="#" data-page="orders"><i data-lucide="shopping-bag"></i> Orders</a></li>
+                    <li><a href="#" data-page="veprofile"><i data-lucide="user"></i> Video Editors</a></li>
+                    <li><a href="#" data-page="veclientslist"><i data-lucide="user"></i> Clients</a></li>
+                    <li><a href="#" data-page="veproductslist"><i data-lucide="folder"></i> Projects</a></li>
+                    <li><a href="#" data-page="addnewproduct"><i data-lucide="square-plus"></i> New Project</a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <button class=" btn btn-danger btn-logout"><i data-lucide="log-out"></i> Logout</button>
+            </div>
+        </aside>
+        <main class="content">
+            <div class="pptopbarmob">
+                <div class="ppmobham">
+                    <img src="https://www.svgrepo.com/show/506800/burger-menu.svg" width='30px'>
+                </div>
+                <div class="gplogo">
+                    <img src="https://gropromedia.co/wp-content/uploads/2024/09/cropped-Logo-Type-Hori-Alt.png" width="120px">
+                </div>
+            </div>
+            <div id="dashboard" class="page active">
+                <h2>Hello, admin <%= user.fullName%> </h2>
+                <!-- document.querySelector('.profile-info h1').textContent = user.fullName; can also use this for name -->
+                
+                <!-- yaha pe wo daal du..total orders and revenue? -->
+                 <%- include('revenuepage') %>
+
+            </div>
+            <div id="orders" class="page">
+                <h2>All orders</h2>
+                <div class="pocontainer">
+                    <div class="filter-bar">
+                        <button class="filter-button active" data-filter="all">All Orders</button>
+                        <button class="filter-button" data-filter="processing">In Progress</button>
+                        <button class="filter-button" data-filter="completed">Completed</button>
+                        <button class="filter-button" data-filter="cancelled">Cancelled</button>
+                    </div>
+            
+                    <div class="orders-grid" id="ordersGrid">
+                        <!-- Orders will be populated by JavaScript -->
+                    </div>
+                </div>
+
+            </div>
+            <div id="veprofile" class="page">
+                <div class="nvecontainer">
+                    <h1>Video Editors</h1>
+                    <div class="editors-grid" id="editorsContainer">
+                        <!-- Cards will be dynamically inserted here -->
+                    </div>
+                </div>
+            </div>
+            <div id="veclientslist" class="page">
+                <div class="nvecontainer">
+                    <h1>Clients</h1>
+                    <div class="editors-grid" id="clientsContainer">
+                        <!-- Cards will be dynamically inserted here -->
+                    </div>
+                </div>
+            </div>
+            <div id="veproductslist" class="page">
+                <div class="nvecontainer">
+                    <h1>Projects</h1>
+                    <div class="" id="videoProjectsContainer">
+                        <!-- Cards will be dynamically inserted here -->
+                    </div>
+                </div>
+            </div>
+            <div id="addnewproduct" class="page">
+                <!-- new project -->
+                 <!-- ve wala use kar liya hai for now -->
+                <div class="nvecontainer">
+                    <h1>Add New Project</h1>
+                    <%- include('uploadvid')  %>
+                </div>
+            </div>
+
+        </main>
+    </div>
+</body>
+
+<script>
+    lucide.createIcons();
+
+    const logButton=document.querySelector('.btn-logout')
+    logButton.addEventListener('click', ()=>{
+        window.location.href = '/user/logout'
+    })
+</script>
+
+
+<script>
+    // script to handle sidebar navigation
+    const pages = document.querySelectorAll('.page');
+    const links = document.querySelectorAll('.sidebar-nav a');
+
+    links.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const targetPage = e.target.getAttribute('data-page');
+
+            pages.forEach(page => {
+                if (page.id === targetPage) {
+                    page.classList.add('active');
+                } else {
+                    page.classList.remove('active');
+                }
+            });
+
+            links.forEach(link => {
+                link.classList.remove('active');
+            });
+            e.target.classList.add('active');
+        });
+    });
+</script>
+
+
+<!-- script to get all orders -->
+<script>
+
+    // Fetch orders from API
+    let orders = [];
+    async function fetchOrders() {
+try {
+    const response = await fetch('/orders')
+    const orderData = await response.json();
+    console.log("Orders fetched:", orderData);
+
+    orders = orderData.map((order, index) => ({
+        id: index + 1,  // Assigning sequential ID
+        bookedby: order.userId.fullName,
+        bookedbyId: order.userId._id,
+        editorId: order.editorId._id,
+        editorName: order.editorId.fullName,
+        editorAvatar: order.editorId.avatarurl, 
+        price: order.amount, 
+        projectTitle: order.projectTitle,
+        status: order.orderStatus,
+        date: order.createdAt,
+        videoUrl: order.videoId.videoUrl || "https://media.istockphoto.com/id/2194184235/video/cyber-defense-powered-by-ai-the-end-of-hacking-headline-newspaper-title.mp4?s=mp4-640x640-is&k=20&c=fALDwOdpsl3iBSkyB8hCZtfPkAq2NNbNxr3rxZt_-LM=" , // Default empty video URL
+    }));
+
+    renderOrders();
+} catch (error) {
+    console.error("Error fetching orders:", error);
+}
+}
+
+    fetchOrders();
+
+    // Function to create order cards
+    function createOrderCard(order) {
+        return `
+            <div class="order-card" data-status="${order.status}">
+                <video class="card-video order-image" src="${order.videoUrl}" muted loop autoplay></video>
+                <div class="order-content">
+                    <div style="display: flex; justify-content: space-between; align-items: center;margin-bottom: 12px;">
+                        <a href='/editor?eid=${order.editorId}' class='editorprofilelink'>
+                            <img src="${order.editorAvatar}" alt="${order.editorName}" style="width: 25px; height: 25px; border-radius: 50%;">
+                            <span class="editor-name">${order.editorName}</span>
+                        </a>
+                        <div class="order-price">$${order.price.toFixed(2)}</div>
+                    </div>
+                    <div class="order-details">
+                        <span class="order-status status-${order.status}">
+                            ${order.status}
+                        </span>
+                    </div>
+                    <div class="order-date">Ordered on ${new Date(order.date).toLocaleDateString()}</div>
+                    <div class='order-revenue'>Revenue: ₹${(order.price*0.1).toFixed(2)}</div>
+                    <div class='booker'>Booked by: ${order.bookedby}</div>
+                </div>
+            </div>
+        `;
+    }
+
+    // Function to render orders
+    function renderOrders(filterStatus = 'all') {
+        const ordersGrid = document.getElementById('ordersGrid');
+        const filteredOrders = filterStatus === 'all' 
+            ? orders 
+            : orders.filter(order => (order.status) === filterStatus);
+        
+        ordersGrid.innerHTML = filteredOrders.map(createOrderCard).join('');
+    }
+
+    // Add filter functionality
+    document.querySelector('.filter-bar').addEventListener('click', (e) => {
+        if (e.target.classList.contains('filter-button')) {
+            // Update active state
+            document.querySelectorAll('.filter-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            e.target.classList.add('active');
+
+            // Filter orders
+            renderOrders(e.target.dataset.filter);
+        }
+    });
+
+    // Initial render
+    //yaha nahi fetch-order me, why??
+
+</script>
+
+
+<!-- script to get all ves -->
+<script>
+    // script to get all video editors
+    let videoEditors = []; // This will store the fetched editors
+
+    async function fetchEditors() {
+        try {
+            const response = await fetch('/api/getallve')
+            const editorData = await response.json();
+            console.log("Editors fetched:", editorData);
+            
+            // Store the fetched editors
+            videoEditors = editorData;
+            
+            // Now create and display the editor cards
+            createEditorCards();
+        } catch (error) {
+            console.error("Error fetching editors:", error);
+            // Show error message in the container
+            const container = document.getElementById('editorsContainer');
+            if (container) {
+                container.innerHTML = `
+                    <div class="error-message">
+                        <p>Failed to load video editors. Please try again later.</p>
+                    </div>
+                `;
+            }
+        }
+    }
+
+    // Function to format date to a readable format
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+        const options = { year: 'numeric', month: 'short', day: 'numeric' };
+        return date.toLocaleDateString('en-US', options);
+    }
+
+    // Function to create editor cards
+    function createEditorCards() {
+        const container = document.getElementById('editorsContainer');
+        
+        // Clear container first
+        container.innerHTML = '';
+        
+        if (!videoEditors || videoEditors.length === 0) {
+            container.innerHTML = '<p class="no-editors">No video editors found</p>';
+            return;
+        }
+        
+        // Loop through editors and create cards
+        videoEditors.forEach(editor => {
+            const card = document.createElement('div');
+            card.className = 'editor-card';
+            
+            // Format dates
+            const createdDate = formatDate(editor.createdAt);
+            
+            card.innerHTML = `
+                <div class="card-header">
+                    <div class="avatar">
+                        <img src="${editor.avatarurl}" alt="${editor.fullName}" onerror="this.src='https://via.placeholder.com/50'">
+                    </div>
+                    <div class="user-info">
+                        <div class="full-name">${editor.fullName}</div>
+                        <a href='/editor?eid=${editor._id}' class="username" style="font-style: oblique;">@${editor.userName}</a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="info-item">
+                        <span class="info-label">Email:</span>
+                        <span class="info-value email">${editor.email}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Role:</span>
+                        <span class="info-value">${editor.role}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Joined:</span>
+                        <span class="info-value">${createdDate}</span>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <span>ID: ${editor._id.toString ? editor._id.toString() : editor._id}</span>
+                    </div>
+                    `;
+                    // <button class="action-btn" onclick="manageEditor('${editor._id.toString ? editor._id.toString() : editor._id}')">Manage</button>
+            
+            container.appendChild(card);
+        });
+    }
+
+    // // Function to handle editor management
+    // function manageEditor(editorId) {
+    //     console.log(`Managing editor with ID: ${editorId}`);
+    //     // Add your management logic here
+    //     // For example: window.location.href = `/admin/editor/${editorId}`;
+    // }
+
+    // Call the fetch function when the DOM is fully loaded
+    document.addEventListener('DOMContentLoaded', fetchEditors);
+</script>
+
+
+<!-- script to get all clients -->
+<script>
+    let clients = [];
+    async function fetchClients() {
+        try {
+            const response = await fetch('/api/getallclients')
+            const clientData = await response.json();
+            console.log("Clients fetched:", clientData);
+            
+            // Store the fetched clients
+            clients = clientData;
+            
+            // Now create and display the client cards
+            createClientCards();
+        } catch (error) {
+            console.error("Error fetching clients:", error);
+            // Show error message in the container
+            const container = document.getElementById('clientsContainer');
+            if (container) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 24px; color: #dc3545;">
+                        <p>Failed to load clients. Please try again later.</p>
+                    </div>
+                `;
+            }
+        }
+    }
+
+    // Function to format date to a readable format
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+        const options = { year: 'numeric', month: 'short', day: 'numeric' };
+        return date.toLocaleDateString('en-US', options);
+    }
+
+    // Function to create client cards
+    function createClientCards() {
+        const container = document.getElementById('clientsContainer');
+        
+        // Clear container first
+        container.innerHTML = '';
+        
+        if (!clients || clients.length === 0) {
+            container.innerHTML = '<p style="text-align: center; padding: 24px; color: #6c757d;">No clients found</p>';
+            return;
+        }
+        
+        // Create container for grid layout with inline styles
+        const gridContainer = document.createElement('div');
+        gridContainer.style.display = 'grid';
+        gridContainer.style.gridTemplateColumns = 'repeat(auto-fill, minmax(300px, 1fr))';
+        gridContainer.style.gap = '24px';
+        gridContainer.style.padding = '20px 0';
+        
+        // Loop through clients and create cards
+        clients.forEach(client => {
+            const card = document.createElement('div');
+            // Card container styles
+            card.style.backgroundColor = 'white';
+            card.style.borderRadius = '8px';
+            card.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.1)';
+            card.style.overflow = 'hidden';
+            card.style.transition = 'transform 0.2s, box-shadow 0.2s';
+            
+            // Add hover effect
+            card.onmouseenter = function() {
+                this.style.transform = 'translateY(-5px)';
+                this.style.boxShadow = '0 8px 16px rgba(0, 0, 0, 0.1)';
+            };
+            card.onmouseleave = function() {
+                this.style.transform = 'translateY(0)';
+                this.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.1)';
+            };
+            
+            // Format dates
+            const createdDate = client.createdAt ? formatDate(client.createdAt) : 'N/A';
+            
+            // Build card content
+            let cardContent = `
+                <div style="padding: 16px; display: flex; align-items: center; border-bottom: 1px solid #f0f0f0;">
+                    <div style="width: 50px; height: 50px; border-radius: 50%; background-color: #e9ecef; overflow: hidden; margin-right: 16px;">
+                        <img src="${client.avatarurl || client.logo || client.profileImage || ''}" 
+                             alt="${client.fullName || client.companyName || client.name || 'Client'}" 
+                             onerror="this.src='https://via.placeholder.com/50'; this.onerror=null;" 
+                             style="width: 100%; height: 100%; object-fit: cover;">
+                    </div>
+                    <div style="flex-grow: 1;">
+                        <div style="font-size: 18px; font-weight: 600; color: #000; margin-bottom: 4px;">
+                            ${client.fullName || client.companyName || client.name || 'Unnamed Client'}
+                        </div>
+                        <div style="font-size: 14px; color: #6c757d;">
+                            ${client.userName || client.username || client.businessType || ''}
+                        </div>
+                    </div>
+                </div>
+                <div style="padding: 16px;">
+            `;
+            
+            // Add email if available
+            if (client.email) {
+                cardContent += `
+                    <div style="margin-bottom: 12px; display: flex; align-items: baseline;">
+                        <span style="font-size: 14px; font-weight: 500; color: #6c757d; width: 100px;">Email:</span>
+                        <span style="font-size: 14px; color: #3498db; word-break: break-word;">${client.email}</span>
+                    </div>
+                `;
+            }
+
+            cardContent+=`<div class="info-item">
+                        <span class="info-label">Role:</span>
+                        <span class="info-value">${client.role}</span>
+                    </div>
+                `;
+            
+            // Add join date
+            cardContent += `
+                <div style="margin-bottom: 12px; display: flex; align-items: baseline;">
+                    <span style="font-size: 14px; font-weight: 500; color: #6c757d; width: 100px;">Joined:</span>
+                    <span style="font-size: 14px; color: #000;">${createdDate}</span>
+                </div>
+            `;
+            
+            // Add footer
+            cardContent += `
+                </div>
+                <div style="background-color: #f8f9fa; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: #6c757d;">
+                    <span>ID: ${client._id ? (client._id.toString ? client._id.toString() : client._id) : 'N/A'}</span>
+                    </div>
+                    `;
+                    // <button 
+                    //     onclick="manageClient('${client._id ? (client._id.toString ? client._id.toString() : client._id) : ''}')"
+                    //     style="background-color: #3498db; color: white; border: none; border-radius: 4px; padding: 8px 12px; cursor: pointer; font-size: 14px; transition: background-color 0.2s;">
+                    //     Manage
+                    // </button>
+            
+            card.innerHTML = cardContent;
+            gridContainer.appendChild(card);
+        });
+        
+        container.appendChild(gridContainer);
+    }
+
+    // Function to handle client management
+    function manageClient(clientId) {
+        console.log(`Managing client with ID: ${clientId}`);
+        // Add your management logic here
+        // For example: window.location.href = `/admin/client/${clientId}`;
+    }
+
+    // Call the fetch function when the DOM is fully loaded
+    document.addEventListener('DOMContentLoaded', fetchClients);
+</script>
+
+
+<!-- script to get all videos (projects) -->
+<script>
+    let videoProjects = [];
+    
+    async function fetchVideoProjects() {
+        try {
+            const response = await fetch('/api/getallvideos')
+            const videoData = await response.json();
+            console.log("Videos fetched:", videoData);
+            
+            // Store the fetched videos
+            videoProjects = videoData;
+            
+            // Now create and display the video cards
+            createVideoProjectCards();
+        } catch (error) {
+            console.error("Error fetching videos:", error);
+            // Show error message in the container
+            const container = document.getElementById('videoProjectsContainer');
+            if (container) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 24px; color: #dc3545;">
+                        <p>Failed to load video projects. Please try again later.</p>
+                    </div>
+                `;
+            }
+        }
+    }
+
+    // Function to format date to a readable format
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+        const options = { year: 'numeric', month: 'short', day: 'numeric' };
+        return date.toLocaleDateString('en-US', options);
+    }
+
+    // Function to format price
+    function formatPrice(price) {
+        return new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: 'USD',
+            minimumFractionDigits: 2
+        }).format(price);
+    }
+
+    // Function to create video project cards
+    function createVideoProjectCards() {
+        const container = document.getElementById('videoProjectsContainer');
+        
+        // Clear container first
+        container.innerHTML = '';
+        
+        if (!videoProjects || videoProjects.length === 0) {
+            container.innerHTML = '<p style="text-align: center; padding: 24px; color: #6c757d;">No video projects found</p>';
+            return;
+        }
+
+        // Create section title
+        // const titleElement = document.createElement('h2');
+        // titleElement.textContent = 'Video Projects';
+        // titleElement.style.fontSize = '24px';
+        // titleElement.style.fontWeight = '600';
+        // titleElement.style.color = '#000';
+        // titleElement.style.marginBottom = '20px';
+        // titleElement.style.paddingLeft = '10px';
+        // titleElement.style.borderLeft = '4px solid #3498db';
+        // container.appendChild(titleElement);
+        
+        // Create container for grid layout with inline styles
+        const gridContainer = document.createElement('div');
+        gridContainer.style.display = 'grid';
+        gridContainer.style.gridTemplateColumns = 'repeat(auto-fill, minmax(320px, 1fr))';
+        gridContainer.style.gap = '24px';
+        gridContainer.style.padding = '20px 0';
+        
+        // Loop through videos and create cards
+        videoProjects.forEach((video, index) => {
+            const card = document.createElement('div');
+            // Card container styles
+            card.style.backgroundColor = 'white';
+            card.style.borderRadius = '8px';
+            card.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.1)';
+            card.style.overflow = 'hidden';
+            card.style.transition = 'transform 0.2s, box-shadow 0.2s';
+            card.style.display = 'flex';
+            card.style.flexDirection = 'column';
+            
+            // Add hover effect
+            card.onmouseenter = function() {
+                this.style.transform = 'translateY(-5px)';
+                this.style.boxShadow = '0 8px 16px rgba(0, 0, 0, 0.1)';
+            };
+            card.onmouseleave = function() {
+                this.style.transform = 'translateY(0)';
+                this.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.1)';
+            };
+            
+            // Format dates
+            const createdDate = video.createdAt ? formatDate(video.createdAt) : 'N/A';
+            
+            // Build card content - with video preview
+            let cardContent = '';
+            if (video.videoUrl) {
+                cardContent += `
+                    <div style="height: 180px; overflow: hidden; position: relative; cursor: pointer;" 
+                         onclick="openVideoPopup('${video.videoUrl}', '${video.title.replace(/'/g, "\\'")}')">
+                        <video 
+                            src="${video.videoUrl}" 
+                            poster="${video.thumbUrl || ''}"
+                            style="width: 100%; height: 100%; object-fit: cover;"
+                            preload="metadata"
+                            onmouseover="this.play(); this.volume=0;" 
+                            onmouseout="this.pause(); this.currentTime=0;">
+                            Your browser does not support the video tag.
+                        </video>
+                        <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-content: center;">
+                            <div style="width: 50px; height: 50px; background-color: rgba(52, 152, 219, 0.8); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="white">
+                                    <path d="M8 5v14l11-7z"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div style="position: absolute; bottom: 0; right: 0; background-color: rgba(0,0,0,0.7); color: white; padding: 4px 8px; font-size: 12px; border-top-left-radius: 8px;">
+                            ${video.category || 'Uncategorized'}
+                        </div>
+                    </div>
+                `;
+            } else {
+                cardContent += `
+                    <div style="height: 180px; background-color: #f8f9fa; display: flex; align-items: center; justify-content: center; color: #6c757d;">
+                        <div style="text-align: center;">
+                            <div style="font-size: 24px; margin-bottom: 8px;">🎬</div>
+                            <div>${video.category || 'Uncategorized'}</div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Add title and description
+            cardContent += `
+                <div style="padding: 16px; flex-grow: 1;">
+                    <h3 style="font-size: 18px; font-weight: 600; color: #000; margin-bottom: 8px; line-height: 1.3;">${video.title}</h3>
+                    <p style="font-size: 14px; color: #6c757d; margin-bottom: 16px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis;">
+                        ${video.description}
+                    </p>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+                        <span style="font-size: 14px; font-weight: 500; color: #3498db;">${formatPrice(video.price)}</span>
+                        <span style="font-size: 14px; color: #6c757d;">Sales: ${video.soldCount}</span>
+                    </div>
+            `;
+            
+            // Add tags if available
+            if (video.tags && video.tags.length > 0) {
+                console.log("Tags:", video.tags);
+                cardContent += `<div style="margin-top: 12px; display: flex; flex-wrap: wrap; gap: 6px;">`;
+                video.tags.slice(0, 3).forEach(tag => {
+                    cardContent += `
+                        <span style="background-color: #e9f2fb; color: #3498db; padding: 2px 8px; border-radius: 12px; font-size: 12px;">
+                            ${tag}
+                        </span>
+                    `;
+                });
+                if (video.tags.length > 3) {
+                    cardContent += `
+                        <span style="background-color: #e9f2fb; color: #3498db; padding: 2px 8px; border-radius: 12px; font-size: 12px;">
+                            +${video.tags.length - 3} more
+                        </span>
+                    `;
+                }
+                cardContent += `</div>`;
+            }
+            
+            // Close the content div
+            cardContent += `</div>`;
+            
+            // Add owner info and action buttons
+            cardContent += `
+                <div style="background-color: #f8f9fa; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #e9ecef;">
+                    <div style="font-size: 13px; color: #6c757d;">
+                        <span>Project Owner </span>
+                        <a href='/editor?eid=${video.owner._id}' style="color: #3498db; text-decoration: none;">
+                            ${video.owner.fullName}
+                        </a>
+                    </div>
+
+                </div>
+                <div style="padding: 8px 16px; font-size: 12px; color: #6c757d; border-top: 1px solid #e9ecef; display: flex; justify-content: space-between;">
+                    <span>Created: ${createdDate}</span>
+                    <span>ID: ${video._id}</span>
+                </div>
+            `;
+            
+            card.innerHTML = cardContent;
+            gridContainer.appendChild(card);
+        });
+        
+        container.appendChild(gridContainer);
+        
+        // Create popup container if it doesn't exist
+        if (!document.getElementById('videoPopupContainer')) {
+            const popupContainer = document.createElement('div');
+            popupContainer.id = 'videoPopupContainer';
+            popupContainer.style.display = 'none';
+            popupContainer.style.position = 'fixed';
+            popupContainer.style.top = '0';
+            popupContainer.style.left = '0';
+            popupContainer.style.width = '100%';
+            popupContainer.style.height = '100%';
+            popupContainer.style.backgroundColor = 'rgba(0, 0, 0, 0.9)';
+            popupContainer.style.zIndex = '1000';
+            popupContainer.style.justifyContent = 'center';
+            popupContainer.style.alignItems = 'center';
+            popupContainer.style.flexDirection = 'column';
+            
+            popupContainer.innerHTML = `
+                <div style="position: relative; width: 80%; max-width: 900px;">
+                    <div style="color: white; font-size: 20px; margin-bottom: 10px; text-align: center; padding: 0 40px;" id="popupVideoTitle"></div>
+                    <button id="closePopupBtn" style="position: absolute; top: -30px; right: 0; background: none; border: none; color: white; font-size: 24px; cursor: pointer;">×</button>
+                    <video id="popupVideo" controls style="width: 100%; max-height: 80vh; border-radius: 4px;">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+            `;
+            
+            document.body.appendChild(popupContainer);
+            
+            // Add close functionality
+            document.getElementById('closePopupBtn').addEventListener('click', closeVideoPopup);
+            popupContainer.addEventListener('click', function(e) {
+                if (e.target === popupContainer) {
+                    closeVideoPopup();
+                }
+            });
+        }
+    }
+
+    // Function to open video popup
+    function openVideoPopup(videoUrl, videoTitle) {
+        const popup = document.getElementById('videoPopupContainer');
+        const popupVideo = document.getElementById('popupVideo');
+        const popupTitle = document.getElementById('popupVideoTitle');
+        
+        popupVideo.src = videoUrl;
+        popupTitle.textContent = videoTitle;
+        
+        popup.style.display = 'flex';
+        
+        // Auto play the video
+        popupVideo.play();
+        
+        // Prevent scrolling of the body
+        document.body.style.overflow = 'hidden';
+        
+        // Add keyboard listener for escape key
+        document.addEventListener('keydown', handleEscKey);
+    }
+    
+    // Function to close video popup
+    function closeVideoPopup() {
+        const popup = document.getElementById('videoPopupContainer');
+        const popupVideo = document.getElementById('popupVideo');
+        
+        popup.style.display = 'none';
+        popupVideo.pause();
+        popupVideo.src = '';
+        
+        // Re-enable scrolling
+        document.body.style.overflow = 'auto';
+        
+        // Remove keyboard listener
+        document.removeEventListener('keydown', handleEscKey);
+    }
+    
+    // Function to handle escape key press
+    function handleEscKey(e) {
+        if (e.key === 'Escape') {
+            closeVideoPopup();
+        }
+    }
+    
+    // Call the fetch function when the DOM is fully loaded
+    document.addEventListener('DOMContentLoaded', fetchVideoProjects);
+</script>
+
+<!-- script to render order with income and at last total revenue -->
+
+</html>

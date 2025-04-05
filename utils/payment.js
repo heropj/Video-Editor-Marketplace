@@ -1,9 +1,12 @@
+import dotenv from 'dotenv'
+dotenv.config()
+
 document.getElementById("pay-btn").addEventListener("click", async function () {
     const response = await fetch("/create-order", { method: "POST" });
     const order = await response.json(); // Get order ID from backend
 
     var options = {
-        key: "YOUR_RAZORPAY_KEY_ID", // Replace with Razorpay Key ID
+        key: "process.env.RP_ID_KEY", // Replace with Razorpay Key ID
         amount: order.amount, // Amount from backend (in paise)
         currency: "INR",
         name: "Your Business Name",

@@ -241,7 +241,7 @@
 
         <div class="client-input">
             <label for="video-link">Your Video Link:</label>
-            <input type="url" id="video-link" placeholder="https://example.com/your-video">
+            <input type="url" id="video-link" placeholder="https://example.com/your-video" required>
             
             <label for="client-message">Message for the Video Editor:</label>
             <textarea id="client-message" placeholder="Enter any specific instructions or details for the editor..."></textarea>
@@ -384,6 +384,10 @@
             // Here you can add code to process the payment or submit the order
             const videoId = urlParams.get('videoId');
             amount=document.querySelector('#totalPrice').innerHTML;
+            if(document.querySelector('#video-link').value==""){
+                alert("Please enter your video link")
+                return;
+            }
             if(document.querySelector('.payment-option.selected').dataset.value === 'cod'){
                 // alert('Order confirmed! Total amount: ₹' + totalPrice.toFixed(2));
                 sendPODPOST(videoId, amount);
@@ -411,7 +415,7 @@
                 console.log("order::: ", order.notes)
                 //order se options banaege
                 var options = {
-                    key: order.key_id, // Replace with Razorpay Key ID
+                    key: "rzp_test_PRp3MNdzmlyBhK", // Replace with Razorpay Key ID
                     amount: order.amount, // Amount from backend (in paise)
                     currency: "INR",
                     name: order.notes.prod_name,
@@ -437,6 +441,10 @@
                 // 	alert("pp Payment Failed");
                 // });
                 rzp1.open();
+                rzp1.on('payment.failed', function (response){
+                    alert("Payment Failed: " + response.error.description);
+                    console.log(response.error);
+                });
             } catch (error) {
                 console.log("Error creating order:", error);
             }

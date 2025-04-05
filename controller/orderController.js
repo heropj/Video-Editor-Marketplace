@@ -9,6 +9,10 @@ async function handleOrderGet (req, res){
             // console.log("if")
             orders = await orderModel.find({editorId:req.user._id}).populate("videoId").populate("editorId").populate("userId");
         }
+        else if(req.user.role=="admin"){
+            // console.log("admin")
+            orders = await orderModel.find({}).populate("videoId").populate("editorId").populate("userId"); // Fetch all orders
+        }
         else{
             // console.log("else")
             console.log(req.user)

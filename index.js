@@ -24,6 +24,7 @@ import userModel from './models/userModel.js'
 import orderModel from './models/orderModel.js'
 import orderController from './controller/orderController.js'
 import likedVidModel from './models/likedVidModel.js'
+import { resourceLimits } from 'worker_threads'
 connectdb(process.env.DB_URL);
 
 app.use(express.static('assets'));
@@ -42,14 +43,33 @@ app.get('/user', jwtAuth.jwtAuthCookie, (req, res) => {
   if(req.user[0].role=='editor'){
     res.render('homeve', {user: req.user[0]});
   }
+  else if(req.user[0].role=='admin'){
+    res.redirect('/adminuser')
+  }
   else{
     res.render('home', {user: req.user[0]});
   }
 })
 
+app.get('/adminuser', jwtAuth.jwtAuthCookie, (req,res)=>{
+  if(req.user[0].role=='admin'){
+    res.render('adminhome', {user: req.user[0]})
+  }
+  else{
+    res.json({message: "You are not an admin"})
+  }
+})
+
 app.get('/userve', jwtAuth.jwtAuthCookie, (req,res)=>{
-  console.log(req.user)
-  res.render('homeve', {user: req.user[0]});
+  if(req.user[0].role=='client'){
+    res.render('home', {user: req.user[0]});
+  }
+  else if(req.user[0].role=='admin'){
+    res.redirect('/adminuser')
+  }
+  else{
+    res.render('homeve', {user: req.user[0]});
+  }
 })
 
 app.post('/upload', videoController.handleVideoUploadPost)
@@ -112,7 +132,7 @@ app.post("/create-order", async (req, res) => {
   const editorId=video.owner._id
   const prod_name=video.title
   const prod_desc=video.description
-  // console.log(video)
+  console.log(video)
     try {
         const order = await razorpay.orders.create({
           amount: amount*100, // Amount in paise (500 INR)
@@ -125,7 +145,7 @@ app.post("/create-order", async (req, res) => {
             prod_desc:prod_desc
           }
         });
-        // console.log(order)
+        console.log("success: ", order)
         res.json(order);
     } catch (error) {
       console.log(error)
@@ -157,7 +177,16 @@ app.get('/editor', (req,res)=>{
 })
 
 app.post('/api/userinfo', async (req,res)=>{
-  const userId= await getUser(req.cookies?.token)
+  // const userId= await getUser(req.cookies?.token)
+  //ye nahi, jo req me aega us user ka nikalenge na bro..
+  let userId=req.body.userId
+  if(!userId){
+    const uid=await getUser(req.cookies?.token)
+    if(!uid){
+      return res.status(401).json({message: "Unauthorized"})
+    }
+    userId=uid._id
+  }
   console.log("uuussseeerrriiiddd:",userId)
   const user=await userModel.find({_id: userId})
   // console.log("user api/userinfo", user)
@@ -170,4 +199,36 @@ app.post('/api/acceptorder', async (req,res)=>{
   const order= await orderModel.findByIdAndUpdate(orderId, {orderStatus: 'processing'})
   // console.log("woohoo: ", order)
   res.send(order)
+})
+
+
+app.get('/api/getallve',jwtAuth.jwtAuthCookie, async(req,res)=>{
+  if(req.user[0].role!='admin'){
+    return res.status(401).json({message: "Unauthorized"})
+  }
+  const ve= await userModel.find({role: 'editor'})
+  console.log("ve: ", ve)
+  res.send(ve);
+})
+
+app.get('/api/getallclients',jwtAuth.jwtAuthCookie, async(req,res)=>{
+  if(req.user[0].role=='admin'){
+    const clients= await userModel.find({role: 'client'})
+    console.log("clients: ", clients)
+    res.send(clients);
+  }
+  else{
+    res.json({message: "You are not an admin"})
+  }
+})
+
+app.get('/api/getallvideos',jwtAuth.jwtAuthCookie, async(req,res)=>{
+  if(req.user[0].role=='admin'){
+    const videos= await videoModel.find({}).populate('owner')
+    console.log("videos: ", videos)
+    res.send(videos);
+  }
+  else{
+    res.json({message: "You are not an admin"})
+  }
 })

@@ -144,7 +144,6 @@
         
         <div class="filter-bar">
             <button class="filter-button active" data-filter="all">All Orders</button>
-            <button class="filter-button" data-filter="placed">Placed</button>
             <button class="filter-button" data-filter="processing">In Progress</button>
             <button class="filter-button" data-filter="completed">Completed</button>
             <button class="filter-button" data-filter="cancelled">Cancelled</button>
@@ -168,7 +167,7 @@
         orders = orderData.map((order, index) => ({
             id: index + 1,  // Assigning sequential ID
             editorId: order.editorId._id,
-            editorName: order.editorId.userName,
+            editorName: order.editorId.fullName,
             editorAvatar: order.editorId.avatarurl, 
             price: order.amount, 
             projectTitle: order.projectTitle,
@@ -196,7 +195,7 @@
                                 <img src="${order.editorAvatar}" alt="${order.editorName}" style="width: 25px; height: 25px; border-radius: 50%;">
                                 <span class="editor-name">${order.editorName}</span>
                             </a>
-                            <div class="order-price">$${order.price.toFixed(2)}</div>
+                            <div class="order-price">$${(order.price).toFixed(2)}</div>
                         </div>
                         <div class="order-details">
                             <span class="order-status status-${order.status}">

@@ -7,9 +7,10 @@
     <style>
 
         .venw-pocontainer {
-            max-width: 1200px;
-            margin: 0 auto;
+            /* max-width: 1200px; */
+            /* margin: 0 auto; */
             padding: 12px;
+            margin-top: 40px;
         }
 
         h1 {
@@ -247,8 +248,9 @@
     </style>
 </head>
 <body>
+    <hr>
     <div class="venw-pocontainer">
-        <h1>New Orders</h1>
+        <h2>New Orders</h2>
 
         <div class="venw-orders-grid" id="venw-ordersGrid">
             <!-- Orders will be populated by JavaScript -->
@@ -268,9 +270,9 @@
                 venwNewOrders = orderData.map((order, index) => ({
                     id: order._id,  // Assigning sequential ID
                     editorId: order.editorId._id,
-                    editorName: order.editorId.userName,
+                    editorName: order.editorId.fullName,
                     clientId: order.userId._id,
-                    clientName: order.userId.userName,
+                    clientName: order.userId.fullName,
                     messageByClient: order.messageByClient,
                     clientVideoLink: order.clientVideoLink,
                     editorAvatar: order.editorId.avatarurl, 
@@ -298,7 +300,7 @@
     <div class="venw-order-content">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
             <div class="venw-client-name">${order.clientName || "No"}</div>
-            <div class="venw-order-price">$${order.price.toFixed(2) || "No"}</div>
+            <div class="venw-order-price">$${(order.price*0.9).toFixed(2) || "No"}</div>
         </div>
 
         <div class="venw-order-details">
@@ -332,6 +334,11 @@
         function renderNewOrders() {
             const venwOrdersGrid = document.getElementById('venw-ordersGrid');
             const filteredNewOrders = venwNewOrders.filter(order => (order.status) === 'placed');
+
+            if(filteredNewOrders.length === 0) {
+                venwOrdersGrid.innerHTML = "<p>No new orders available.</p>";
+                return;
+            }
             
             venwOrdersGrid.innerHTML = filteredNewOrders.map(createNewOrderCard).join('');
         }
@@ -345,7 +352,17 @@
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({ orderId }) // Convert form data to JSON
+                    
                 });
+
+                if(resp.ok){
+                    const result = await resp.json();
+                    console.log(result)
+                    if (resp.status === 201) {
+                        // Redirect to success page
+                        window.location.href = '/user';
+                    }
+                }
             } catch (error) {
                 console.log("error in /api/acceptorder...: ", error)
             }

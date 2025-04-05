@@ -42,22 +42,23 @@ async function handleVideoUploadPost(req, res) {
 }
 
 async function handleVideoGet(req, res) {
-    const {editorId}=req.body
-  try {
-    let videos;
-    if(editorId){
-        videos = await videoModel.find({owner: editorId}); // Fetch editor's when editorId di ho
+    const { owner } = req.query;
+  
+    try {
+        let videos;
+      if (!owner) {
+        videos = await videoModel.find({}).populate('owner');
+      }
+      else{
+        videos = await videoModel.find({ owner });
+      }
+      res.json(videos);
+    } catch (error) {
+      console.error("Error fetching videos:", error);
+      res.status(500).json({ message: "Error fetching videos" });
     }
-    else{
-        videos = await videoModel.find(); // Fetch all videos edid nhi
-    }
-    // console.log("vids", videos) 
-    res.json(videos); // Send the videos as JSON
-  } catch (error) {
-    console.error('Error fetching videos:', error);
-    res.status(500).json({ message: 'Error fetching videos' });
   }
-}
+  
 
 async function handleVideoLikeGet(req,res){
     const token=req.cookies?.token

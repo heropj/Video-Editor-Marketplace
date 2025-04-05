@@ -67,6 +67,7 @@ body {
 .sidebar-nav a {
     display: flex;
     align-items: center;
+    gap:6px;
     padding: 10px 20px;
     color: #ecf0f1;
     text-decoration: none;
