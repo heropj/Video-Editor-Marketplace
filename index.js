@@ -25,6 +25,7 @@ import orderModel from './models/orderModel.js'
 import orderController from './controller/orderController.js'
 import likedVidModel from './models/likedVidModel.js'
 import { resourceLimits } from 'worker_threads'
+import checkDomain from './middlewares/checkDomain.js'
 connectdb(process.env.DB_URL);
 
 app.use(express.static('assets'));
@@ -39,15 +40,24 @@ app.get('/reel', (req,res)=>{
   res.render('reels')
 })
 
-app.get('/user', jwtAuth.jwtAuthCookie, (req, res) => {
+app.get('/user', jwtAuth.jwtAuthCookie,checkDomain, (req, res) => {
   if(req.user[0].role=='editor'){
-    res.render('homeve', {user: req.user[0]});
+    res.redirect('/userve')
   }
   else if(req.user[0].role=='admin'){
     res.redirect('/adminuser')
   }
   else{
-    res.render('home', {user: req.user[0]});
+    res.redirect('/client')
+  }
+})
+
+app.get('/client', jwtAuth.jwtAuthCookie, (req,res)=>{
+  if(req.user[0].role=='client'){
+    res.render('home', {user: req.user[0]})
+  }
+  else{
+    res.json({message: "You are not a client"})
   }
 })
 
@@ -61,11 +71,8 @@ app.get('/adminuser', jwtAuth.jwtAuthCookie, (req,res)=>{
 })
 
 app.get('/userve', jwtAuth.jwtAuthCookie, (req,res)=>{
-  if(req.user[0].role=='client'){
-    res.render('home', {user: req.user[0]});
-  }
-  else if(req.user[0].role=='admin'){
-    res.redirect('/adminuser')
+  if(req.user[0].role!='editor'){
+    res.json({message: "You are not an editor"})
   }
   else{
     res.render('homeve', {user: req.user[0]});
