@@ -39,6 +39,7 @@
 
     .order-card:hover {
         transform: translateY(-2px);
+        cursor: pointer;
     }
 
     .order-image {
@@ -427,7 +428,7 @@ try {
     console.log("Orders fetched:", orderData);
 
     orders = orderData.map((order, index) => ({
-        id: index + 1,  // Assigning sequential ID
+        id: order._id,  // Assigning sequential ID
         bookedby: order.userId.fullName,
         bookedbyId: order.userId._id,
         editorId: order.editorId._id,
@@ -451,7 +452,7 @@ try {
     // Function to create order cards
     function createOrderCard(order) {
         return `
-            <div class="order-card" data-status="${order.status}">
+            <div class="order-card" data-status="${order.status}" data-id="${order.id}" onclick="openorderdet(event, '${order.id}')">
                 <video class="card-video order-image" src="${order.videoUrl}" muted loop autoplay></video>
                 <div class="order-content">
                     <div style="display: flex; justify-content: space-between; align-items: center;margin-bottom: 12px;">
@@ -459,7 +460,7 @@ try {
                             <img src="${order.editorAvatar}" alt="${order.editorName}" style="width: 25px; height: 25px; border-radius: 50%;">
                             <span class="editor-name">${order.editorName}</span>
                         </a>
-                        <div class="order-price">$${order.price.toFixed(2)}</div>
+                        <div class="order-price">₹${order.price.toFixed(2)}</div>
                     </div>
                     <div class="order-details">
                         <span class="order-status status-${order.status}">
@@ -474,6 +475,9 @@ try {
         `;
     }
 
+function openorderdet(event, orderId){
+    window.location.href = `/order/${orderId}`;
+}
     // Function to render orders
     function renderOrders(filterStatus = 'all') {
         const ordersGrid = document.getElementById('ordersGrid');

@@ -40,7 +40,7 @@ app.get('/reel', (req,res)=>{
   res.render('reels')
 })
 
-app.get('/user', jwtAuth.jwtAuthCookie,checkDomain, (req, res) => {
+app.get('/user', jwtAuth.jwtAuthCookie, (req, res) => {
   if(req.user[0].role=='editor'){
     res.redirect('/userve')
   }
@@ -238,4 +238,63 @@ app.get('/api/getallvideos',jwtAuth.jwtAuthCookie, async(req,res)=>{
   else{
     res.json({message: "You are not an admin"})
   }
+})
+
+app.delete('/api/order/:id',jwtAuth.jwtAuthCookie, async (req, res) => {
+  try {
+    const orderId = req.params.id;
+    const userId = req.user[0]._id; 
+    
+    console.log("Cancelling order:", orderId, "for user:", userId);
+    
+    // Find the order by ID and check if it belongs to the current user
+    const order = await orderModel.findOneAndUpdate(
+      { 
+        _id: orderId, 
+        userId: userId  // Ensure the order belongs to the current user
+      },
+      { 
+        orderStatus: 'cancelled' // Update the status to cancelled
+      },
+      { 
+        new: true // Return the updated document
+      }
+    );
+    
+    if (!order) {
+      return res.status(404).json({ message: "Order not found or not authorized" });
+    }
+    
+    console.log("Order cancelled:", order);
+    res.status(200).json(order);
+    
+  } catch (error) {
+    console.error("Error cancelling order:", error);
+    res.status(500).json({ message: "Server error while cancelling order" });
+  }
+});
+
+app.get('/api/order/:id', jwtAuth.jwtAuthCookie, async (req, res) => {
+  const orderid=req.params.id;
+  const userid=req.user[0]._id;
+  try {
+    const order=await orderModel.find({id: orderid, userId: userid})
+  } catch (error) {
+    
+  }
+})
+
+app.get('/order/:id', jwtAuth.jwtAuthCookie, async(req, res)=>{
+  try {
+    const order= await orderModel.findById(req.params.id).populate('editorId').populate('userId').populate('videoId')
+    if(req.user[0].role!='admin'){
+      if(req.user[0]._id.toString() !== order.userId._id.toString() && req.user[0]._id.toString()!=order.editorId._id.toString()){
+        return res.status(401).json({message: "Unauthorized"})
+      }
+    }
+    res.render('orderdetails', {order: order, userType: req.user[0].role, uid:req.user[0]._id})
+  } catch (error) {
+    if(error.name=='CastError') res.json({"error": "invalid order id"})
+  }
+
 })

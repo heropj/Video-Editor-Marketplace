@@ -382,6 +382,10 @@
                             <option value="others">others</option>
                         </select>
                     </div>
+                    <div id="customCategoryContainer" class="form-group" style="display:none;">
+                        <label class="form-label" for="customCategory">Enter custom category</label>
+                        <input type="text" id="customCategory" class="form-input" placeholder="Your custom category">
+                    </div>
 
                     <div class="form-group">
                         <label class="form-label" for="description">Description</label>
@@ -413,6 +417,19 @@
     </div>
 
     <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+    const typeSelect = document.getElementById('type');
+    const customCategoryContainer = document.getElementById('customCategoryContainer');
+    
+    typeSelect.addEventListener('change', function() {
+        if (this.value === 'others') {
+            customCategoryContainer.style.display = 'block';
+        } else {
+            customCategoryContainer.style.display = 'none';
+        }
+    });
+});
+
         // File Upload Handling
         const dropZone = document.getElementById('dropZone');
         const fileInput = document.getElementById('fileInput');
@@ -582,12 +599,22 @@
             // Change button text to indicate uploading
             submitBtn.innerHTML = '<span class="spinner"></span><span class="btn-text">Uploading...</span>';
             submitBtn.disabled = true;
-            
+        
+
+
             // Create FormData object
             const formData = new FormData();
             formData.append('title', document.getElementById('title').value);
             formData.append('price', document.getElementById('price').value);
-            formData.append('category', document.getElementById('type').value); // Using 'category' as the backend expects
+
+let selectedCategory = document.getElementById('type').value;
+if (selectedCategory === 'others') {
+    selectedCategory = document.getElementById('customCategory').value;
+}
+formData.append('category', selectedCategory);
+
+
+            // formData.append('category', document.getElementById('type').value); // Using 'category' as the backend expects
             formData.append('description', document.getElementById('description').value);
             formData.append('tags', JSON.stringify(tags)); // Sending tags as JSON string
             formData.append('file', fileInput.files[0]); // Add the video file
@@ -609,7 +636,7 @@
                     const result = await response.json();
                     alert(`Video uploaded successfully: ${result.message}`);
                     if (response.status === 201) {
-                        window.location.href = '/userve';
+                        window.location.href = '/user';
                     }
                 } else {
                     console.error('Failed to upload file');

@@ -81,7 +81,7 @@ async function handleVideoLikePost(req,res){
 
     console.log("curricon: ", curricon)
 
-    if(curricon =='liked'){
+    if(curricon !=='liked'){
         const likedVid = await likedVidModel.deleteMany({ clientId: req.user[0]._id, videoId: vidid });
         return res.status(201).json({ message: 'Video unliked'});
     }

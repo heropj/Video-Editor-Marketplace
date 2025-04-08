@@ -64,6 +64,9 @@
         }
 
         .rl-video-info {
+            background: linear-gradient(to right, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.5));
+            border-radius: 20px;
+            padding: 6px 15px;
             position: absolute;
             bottom: 20px;
             z-index: 2;
@@ -84,7 +87,7 @@
             flex-grow: 1;
             display: flex;
             flex-direction: column;
-            justify-content: end;
+            justify-content: center;
         }
 
         .rl-action-buttons-container {
@@ -328,6 +331,7 @@ document.body.addEventListener("click", (event) => {
         }
         
 // Use an async function to handle the result
+let ppcategories=['all'];
 async function loadVideos() {
     const videos = await getvideos(); // Wait for the promise to resolve
     const likes = await getlikes(); // Wait for the promise to resolve
@@ -338,7 +342,7 @@ async function loadVideos() {
     // console.log("hiiiiiiiillll: ",likes.includes(videos[0]._id))
 
     const vidpp = videos.map(video => ({
-        editorId:video.owner,
+        editor:video.owner,
         url: video.videoUrl, // Assuming the API returns `url` field
         title: video.title, // Assuming the API returns `title` field
         description: video.description, // Assuming the API returns `description` field
@@ -347,6 +351,10 @@ async function loadVideos() {
         _id:video._id,
         isLiked:likes.includes(video._id)
     }));
+    
+
+    const uniqueCategories = [...new Set(videos.map(video => video.category))];
+    ppcategories = ['all', ...uniqueCategories.filter(cat => cat && cat !== 'all')];
 
     return vidpp; // Use this as needed
 }
@@ -359,6 +367,11 @@ async function loadVideos() {
         function createVideoElement(video) {
             const videoItem = document.createElement('div');
             videoItem.className = 'rl-video-item';
+
+                const categoryChipsHTML = ppcategories.map(cat => 
+                `<button class="filter-chip">${cat}</button>`
+                ).join('');
+
             videoItem.innerHTML = `
                 <video class="rl-video" loop muted playsinline>
                     <source id="${video._id}" src="${video.url}" type="video/mp4">
@@ -371,25 +384,24 @@ async function loadVideos() {
                     </button>
 
                     <div class="filter-overlay" id="filterOverlay">
-                        <div class="filter-section">
-                            <span class="filter-label">Categories</span>
-                            <div class="filter-chips">
-                                <button class="filter-chip">all</button>
-                                <button class="filter-chip">wedding</button>
-                                <button class="filter-chip">commercial</button>
-                                <button class="filter-chip">music</button>
-                                <button class="filter-chip">corporate</button>
-                                <button class="filter-chip">social</button>
-                                <button class="filter-chip">others</button>
-                            </div>
-                        </div>
+                <div class="filter-section">
+                    <span class="filter-label">Categories</span>
+                    <div class="filter-chips">
+                        ${categoryChipsHTML}
                     </div>
+                </div>
+            </div>
                 </div>
                 <div class="rl-video-info">
                     <div class="rl-viddesc">
-                        <h3 id='vidtitle'>${video.title}</h3>
-                        <p id='viddesc'>${video.description}</p>
-                        <p id='${video.editorId}' class='video-owner'>${video.editorId}</p>
+                        <p id='vidtitle' style="font-size:20px; font-weight: 500;">${video.title}</p>
+                        <p id='viddesc' style="margin-bottom: 12px;max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${video.description}</p>
+                        <a href="/editor?eid=${video.editor._id}"" id='${video.editor._id}' class='video-owner'
+                            style="text-decoration:none; color: red;display: flex; align-items: center; font-size: 14px; font-weight:600;"
+                        >
+                        <img src="${video.editor.avatarurl}" alt="${video.editor.userName}" style="width: 25px; height: 25px; border-radius: 50%; margin-right: 5px;">
+                            ${video.editor.fullName}
+                        </a>
                         <p style="font-size:20px; font-style: italic;" id='vidprice'>$${video.price}</p>
                     </div>
                     <div class="rl-vidoptions">
@@ -408,36 +420,39 @@ async function loadVideos() {
             return videoItem;
         }
 
-        function toggleHeart(event) {
-            const hearticon = event.target;
-            if (hearticon.innerHTML == '❤') {
-                hearticon.innerHTML = '♡'
-            } else {
-                hearticon.innerHTML = '❤'
+        // function toggleHeart(event) {
+        //     const hearticon = event.target;
+        //     if (hearticon.innerHTML == '❤') {
+        //         hearticon.innerHTML = '♡'
+        //     } else {
+        //         hearticon.innerHTML = '❤'
 
-            }
-            document.querySelector('.rl-heart-icon').classList.toggle('activeliked');
-            // console.log(document.querySelector('.rl-heart-icon').innerHTML)
-            sendLike(document.querySelector('.rl-heart-icon').innerHTML=='❤' ? 'unliked' : 'liked');
-        }
+        //     }
+        //     document.querySelector('.rl-heart-icon').classList.toggle('activeliked');
+        //     // console.log(document.querySelector('.rl-heart-icon').innerHTML)
+        //     sendLike(document.querySelector('.rl-heart-icon').innerHTML=='❤' ? 'unliked' : 'liked');
+        // }
 
-        async function sendLike(curricon){
-            document.body.addEventListener("click", async function (event) {
-                let closestVid=event.target.closest('.rl-video-item')
-            const vidid=closestVid.querySelector('.rl-video source').id;
-            console.log("vidurl vidlike", vidid)
+        // async function sendLike(curricon){
+        //     document.body.addEventListener("click", async function (event) {
+        //         let closestVid=event.target.closest('.rl-video-item')
+        //     const vidid=closestVid.querySelector('.rl-video source').id;
+        //     console.log("vidurl vidlike", vidid)
             
-            const response = await fetch('/api/like', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({vidid, curricon})
-            });
-            const data = await response.json();
-            console.log("sent like data", data);
-        });
-        }
+        //     const response = await fetch('/api/like', {
+        //         method: 'POST',
+        //         headers: {
+        //             'Content-Type': 'application/json'
+        //         },
+        //         body: JSON.stringify({vidid, curricon})
+        //     });
+        //     const data = await response.json();
+        //     console.log("sent like data", data);
+        // });
+        // }
+
+
+
 
         // Function to filter and display videos
         function filterVideos(category) {
@@ -504,6 +519,41 @@ async function loadVideos() {
                 });
         }
 
+
+        async function toggleHeart(event) {
+    const heartIcon = event.target;
+    const videoItem = heartIcon.closest('.rl-video-item');
+    const videoId = videoItem.querySelector('.rl-video source').id;
+
+    console.log("vid dets: ", heartIcon, videoItem, videoId)
+    
+    // Toggle the heart state
+    const isLiked = heartIcon.innerHTML === '♡'; // Will become liked
+    heartIcon.innerHTML = isLiked ? '❤' : '♡';
+    heartIcon.classList.toggle('activeliked');
+    
+    // Send the like/unlike request to the server
+    try {
+        const response = await fetch('/api/like', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                vidid: videoId,
+                curricon: isLiked ? 'liked' : 'unliked'
+            })
+        });
+        
+        const data = await response.json();
+        console.log("Like response:", data);
+    } catch (error) {
+        console.error("Error sending like:", error);
+        // Revert the heart state if the request failed
+        heartIcon.innerHTML = isLiked ? '♡' : '❤';
+        heartIcon.classList.toggle('activeliked');
+    }
+}
         // Function to handle intersection observer for videos
         function initializeVideos() {
             const videoElements = document.querySelectorAll('.rl-video');
@@ -550,8 +600,8 @@ async function loadVideos() {
         // prod_name, amount, prod_desc
         document.body.addEventListener("click", async function (event) {
             let viddpp=event.target.closest('.rl-video-item')
-            const videoId=viddpp.querySelector('.rl-video source').id;
-            const vidamt=viddpp.querySelector('#vidprice').textContent.slice(1);
+            const videoId=viddpp?.querySelector('.rl-video source').id;
+            const vidamt=viddpp?.querySelector('#vidprice').textContent.slice(1);
 
             if (event.target.closest("#pay-btn")) { 
                 window.location.href = `/checkout?videoId=${videoId}&amt=${vidamt}`;

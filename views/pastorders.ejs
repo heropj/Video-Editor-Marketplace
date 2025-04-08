@@ -34,6 +34,7 @@
 
         .order-card:hover {
             transform: translateY(-2px);
+            cursor: pointer;
         }
 
         .order-image {
@@ -70,7 +71,7 @@
         .order-status {
             display: inline-block;
             border-radius: 20px;
-            font-size: 13px;
+            font-size: 15px;
             font-weight: 500;
         }
 
@@ -86,7 +87,7 @@
 
         .order-date {
             color: #888;
-            font-size: 13px;
+            font-size: 15px;
         }
 
         .filter-bar {
@@ -144,6 +145,7 @@
         
         <div class="filter-bar">
             <button class="filter-button active" data-filter="all">All Orders</button>
+            <button class="filter-button" data-filter="placed">Pending Approval</button>
             <button class="filter-button" data-filter="processing">In Progress</button>
             <button class="filter-button" data-filter="completed">Completed</button>
             <button class="filter-button" data-filter="cancelled">Cancelled</button>
@@ -165,7 +167,7 @@
         console.log("Orders fetched:", orderData);
 
         orders = orderData.map((order, index) => ({
-            id: index + 1,  // Assigning sequential ID
+            id: order._id,  // Assigning sequential ID
             editorId: order.editorId._id,
             editorName: order.editorId.fullName,
             editorAvatar: order.editorId.avatarurl, 
@@ -186,27 +188,40 @@
 
         // Function to create order cards
         function createOrderCard(order) {
-            return `
-                <div class="order-card" data-status="${order.status}">
-                    <video class="card-video order-image" src="${order.videoUrl}" muted loop autoplay></video>
-                    <div class="order-content">
-                        <div style="display: flex; justify-content: space-between; align-items: center;margin-bottom: 12px;">
-                            <a href='/editor?eid=${order.editorId}' class='editorprofilelink'>
-                                <img src="${order.editorAvatar}" alt="${order.editorName}" style="width: 25px; height: 25px; border-radius: 50%;">
-                                <span class="editor-name">${order.editorName}</span>
-                            </a>
-                            <div class="order-price">$${(order.price).toFixed(2)}</div>
-                        </div>
+    return `
+        <div class="order-card" data-status="${order.status}" data-id="${order.id}" onclick="openorderdet(event, '${order.id}')">
+            <video class="card-video order-image" src="${order.videoUrl}" muted loop autoplay></video>
+            <div class="order-content">
+                <div style="display: flex; justify-content: space-between; align-items: center;margin-bottom: 12px;">
+                    <a href='/editor?eid=${order.editorId}' class='editorprofilelink'>
+                        <img src="${order.editorAvatar}" alt="${order.editorName}" style="width: 25px; height: 25px; border-radius: 50%;">
+                        <span class="editor-name">${order.editorName}</span>
+                    </a>
+                    <div class="order-price">$${(order.price).toFixed(2)}</div>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 4px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
                         <div class="order-details">
                             <span class="order-status status-${order.status}">
                                 ${order.status}
                             </span>
                         </div>
-                        <div class="order-date">Ordered on ${new Date(order.date).toLocaleDateString()}</div>
+                        <div class="order-date">${new Date(order.date).toLocaleDateString()}</div>
                     </div>
+                    ${order.status !== 'completed' && order.status !== 'cancelled' ? `
+                        <button class='ppcancell' style="width: 100px; padding: 8px; background-color: #e74c3c; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                            Cancel Order
+                        </button>
+                    ` : ''}
                 </div>
-            `;
-        }
+            </div>
+        </div>
+    `;
+}
+
+function openorderdet(event, orderId){
+    window.location.href = `/order/${orderId}`;
+}
 
         // Function to render orders
         function renderOrders(filterStatus = 'all') {
@@ -236,5 +251,46 @@
         //yaha nahi fetch-order me, why??
 
     </script>
+
+<!-- script to cancel order -->
+<script>
+    // Add event delegation instead of direct event listeners
+document.addEventListener('DOMContentLoaded', () => {
+    console.log("DOM fully loaded and parsed");
+    
+    // Use event delegation to handle clicks on dynamically created buttons
+    document.addEventListener('click', async (event) => {
+        if (event.target.classList.contains('ppcancell')) {
+            console.log("Cancel button clicked");
+            
+            const orderCard = event.target.closest('.order-card');
+            // Get the order ID from the data attributes
+            const orderId = orderCard.getAttribute('data-id');
+            
+            console.log("Order ID to cancel:", orderId);
+            
+            if (!orderId) {
+                console.error("No order ID found");
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/order/${orderId}`, {
+                    method: 'DELETE',
+                });
+                
+                if (response.ok) {
+                    alert('Order cancelled successfully!');
+                    fetchOrders(); // Refresh orders after cancellation
+                } else {
+                    alert('Failed to cancel the order. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error cancelling order:', error);
+            }
+        }
+    });
+});
+</script>
 </body>
 </html>

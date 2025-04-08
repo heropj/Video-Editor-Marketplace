@@ -34,6 +34,7 @@
 
         .order-card:hover {
             transform: translateY(-2px);
+            cursor: pointer;
         }
 
         .order-image {
@@ -144,6 +145,7 @@
         
         <div class="filter-bar">
             <button class="filter-button active" data-filter="all">All Orders</button>
+            <button class="filter-button" data-filter="placed">New Orders</button>
             <button class="filter-button" data-filter="processing">In Progress</button>
             <button class="filter-button" data-filter="completed">Completed</button>
             <button class="filter-button" data-filter="cancelled">Cancelled</button>
@@ -165,7 +167,7 @@
         console.log("Orders fetched:", orderData);
 
         orders = orderData.map((order, index) => ({
-            id: index + 1,  // Assigning sequential ID
+            id: order._id,  // Assigning sequential ID
             editorId: order.editorId._id,
             editorName: order.editorId.userName,
             editorAvatar: order.editorId.avatarurl, 
@@ -187,7 +189,7 @@
         // Function to create order cards
         function createOrderCard(order) {
             return `
-                <div class="order-card" data-status="${order.status}">
+                <div class="order-card" data-status="${order.status}" data-id="${order.id}" onclick="openorderdet(event, '${order.id}')">
                     <video class="card-video order-image" src="${order.videoUrl}" muted loop autoplay></video>
                     <div class="order-content">
                         <div style="display: flex; justify-content: space-between; align-items: center;margin-bottom: 12px;">
@@ -208,6 +210,9 @@
             `;
         }
 
+function openorderdet(event, orderId){
+    window.location.href = `/order/${orderId}`;
+}
         // Function to render orders
         function renderOrders(filterStatus = 'all') {
             const ordersGrid = document.getElementById('ordersGrid');

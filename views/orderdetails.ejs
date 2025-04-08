@@ -1,0 +1,196 @@
+<!-- order-details.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Details</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="mb-4">Order Details</h1>
+        
+        <% if (!order) { %>
+            <div class="alert alert-danger">Order not found or you don't have permission to view this order.</div>
+        <% } else { %>
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Order #<%= order._id %></h5>
+                    <span class="badge <%= order.orderStatus === 'placed' ? 'bg-primary' : 
+                               order.orderStatus === 'processing' ? 'bg-warning' : 
+                               order.orderStatus === 'completed' ? 'bg-success' : 'bg-danger' %>">
+                        <%= order.orderStatus.charAt(0).toUpperCase() + order.orderStatus.slice(1) %>
+                    </span>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Basic Information</h6>
+                            <ul class="list-group list-group-flush mb-3">
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>Amount:</span>
+                                    <strong>$<%= order.amount.toFixed(2) %></strong>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>Payment Status:</span>
+                                    <span class="badge <%= order.paymentStatus === 'Paid' ? 'bg-success' : 'bg-warning' %>">
+                                        <%= order.paymentStatus %>
+                                    </span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>Payment ID:</span>
+                                    <span><%= order.paymentId %></span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>Created At:</span>
+                                    <span><%= new Date(order.createdAt).toLocaleString() %></span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>People</h6>
+                            <ul class="list-group list-group-flush mb-3">
+                                <li class="list-group-item">
+                                    <div><strong>Client:</strong></div>
+                                    <div><%= order.userId.fullName %> (<%= order.userId.email %>)</div>
+                                </li>
+                                <li class="list-group-item">
+                                    <div><strong>Editor:</strong></div>
+                                    <div><%= order.editorId.fullName %> (<%= order.editorId.email %>)</div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <h6>Video Information</h6>
+                            <div class="card mb-3">
+                                <div>
+                                    <video loop muted playsinline width="400px">
+                                        <source id="<%= order.videoId._id %>" src="<%= order.videoId.videoUrl %>" type="video/mp4">
+                                      </video>                                      
+                                </div>
+                                <div class="card-body">
+                                    <h5 class="card-title"><%= order.videoId.title %></h5>
+                                    <p class="card-text"><%= order.videoId.description %></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <h6>Client Message</h6>
+                            <div class="card">
+                                <div class="card-body">
+                                    <%= order.messageByClient || 'No message provided' %>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Client Video Link</h6>
+                            <div class="input-group mb-3">
+                                <input type="text" class="form-control" value="<%= order.clientVideoLink %>" readonly>
+                                <a href="<%= order.clientVideoLink %>" target="_blank" class="btn btn-outline-secondary">Open</a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <% if (userType === 'client' && (order.orderStatus !== 'completed' && order.orderStatus !== 'cancelled')) { %>
+                            <button class="btn btn-danger" onclick="cancelOrder('<%= order._id %>')">Cancel Order</button>
+                        <% } else if (userType === 'editor') { %>
+                            <div class="btn-group">
+                                <% if (order.orderStatus === 'placed') { %>
+                                    <button class="btn btn-primary" onclick="acceptOrder('<%= order._id %>')">Accept Order</button>
+                                <% } %>
+                                <% if (order.orderStatus === 'processing') { %>
+                                    <button class="btn btn-success" onclick="markCompleted('<%= order._id %>')">Mark as Completed</button>
+                                <% } %>
+                                <% if (order.orderStatus !== 'completed' && order.orderStatus !== 'cancelled') { %>
+                                    <button class="btn btn-danger" onclick="cancelOrder('<%= order._id %>')">Cancel Order</button>
+                                <% } %>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+        <% } %>
+        
+        <a href="/user" class="btn btn-secondary">home</a>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function cancelOrder(orderId) {
+            if (confirm('Are you sure you want to cancel this order?')) {
+                fetch(`/api/order/${orderId}/cancel`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Order cancelled successfully');
+                        location.reload();
+                    } else {
+                        alert('Failed to cancel order: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while cancelling the order');
+                });
+            }
+        }
+        
+        function acceptOrder(orderId) {
+            fetch(`/api/order/${orderId}/accept`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Order accepted successfully');
+                    location.reload();
+                } else {
+                    alert('Failed to accept order: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while accepting the order');
+            });
+        }
+        
+        function markCompleted(orderId) {
+            fetch(`/api/order/${orderId}/complete`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Order marked as completed');
+                    location.reload();
+                } else {
+                    alert('Failed to complete order: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while completing the order');
+            });
+        }
+    </script>
+</body>
+</html>
