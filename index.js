@@ -33,14 +33,14 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 app.get('/', (req,res)=>{
-  res.send("welcome to / page")
+  res.redirect('/user')
 })
 
 app.get('/reel', (req,res)=>{
   res.render('reels')
 })
 
-app.get('/user', jwtAuth.jwtAuthCookie, (req, res) => {
+app.get('/user',checkDomain, jwtAuth.jwtAuthCookie, (req, res) => {
   if(req.user[0].role=='editor'){
     res.redirect('/userve')
   }
