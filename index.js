@@ -33,14 +33,21 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 app.get('/', (req,res)=>{
-  res.redirect('/user')
+  const host = req.get('host');
+  if (host.includes('videoeditor') || host.includes('admin')) {
+    res.redirect('/user')
+  }
+  else{
+    res.render('reelwologin')
+  }
+  
 })
 
-app.get('/reel', (req,res)=>{
-  res.render('reels')
-})
+// app.get('/reel', (req,res)=>{
+//   res.render('reels')
+// })
 
-app.get('/user',checkDomain, jwtAuth.jwtAuthCookie, (req, res) => {
+app.get('/user', jwtAuth.jwtAuthCookie,checkDomain, (req, res) => {
   if(req.user[0].role=='editor'){
     res.redirect('/userve')
   }
