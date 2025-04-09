@@ -78,7 +78,8 @@
       return;
     }
 
-    data.forEach(order => {
+    const filtData = data.filter(order => order.orderStatus !== 'cancelled');
+    filtData.forEach(order => {
       const revenue = (order.amount * 0.9).toFixed(2);
       netRevenue += parseFloat(revenue);
 

@@ -298,3 +298,51 @@ app.get('/order/:id', jwtAuth.jwtAuthCookie, async(req, res)=>{
   }
 
 })
+
+
+app.put('/api/order/:id', jwtAuth.jwtAuthCookie, async (req, res) => {
+  const orderid=req.params.id;
+  const {newState}=req.body;
+  const user=req.user[0];
+
+  try {
+    const order=await orderModel.findById(orderid).populate('editorId').populate('userId')
+    if(!order){
+      return res.status(404).json({message: "Order not found"})
+    }
+    else if(order.orderStatus=='completed'){
+      return res.status(400).json({message: "Order already completed"})
+    }
+    else if(order.orderStatus=='cancelled'){
+      return res.status(400).json({message: "Order already cancelled"})
+    }
+    else{
+      if(user.role=='admin'){
+          const updatedOrder=await orderModel.findByIdAndUpdate(orderid, {orderStatus: newState}, {new: true})
+          res.status(200).json(updatedOrder)
+      }
+      else if(user.role=='editor'){
+        if(order.editorId._id.toString() !== user._id.toString()){
+          return res.status(401).json({message: "Unauthorized"})
+        }
+        const updatedOrder=await orderModel.findByIdAndUpdate(orderid, {orderStatus: newState}, {new: true})
+        res.status(200).json(updatedOrder)
+      }
+      else if(user.role=='client'){
+        if(order.userId._id.toString() !== user._id.toString()){
+          return res.status(401).json({message: "Unauthorized"})
+        }
+        const updatedOrder=await orderModel.findByIdAndUpdate(orderid, {orderStatus: newState}, {new: true})
+        res.status(200).json(updatedOrder)
+      }
+      else{
+        return res.status(401).json({message: "Unauthorized"})
+      }
+
+    }
+
+  } catch (error) {
+    console.log(error)
+    
+  }
+})

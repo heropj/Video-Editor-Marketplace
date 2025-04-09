@@ -76,13 +76,25 @@
         }
 
         .status-completed {
+            padding: 2px 6px;
             background-color: #e6f4ea;
             color: #1e7e34;
         }
 
-        .status-in-progress {
+        .status-progress {
+            padding: 2px 6px;
             background-color: #fff3e0;
-            color: #e65100;
+            color: rgb(57, 57, 106);
+        }
+        .status-cancelled {
+            padding: 2px 6px;
+            background-color: #fff3e0;
+            color: red;
+        }
+        .status-placed {
+            padding: 2px 6px;
+            background-color: #fff3e0;
+            color: yellow;
         }
 
         .order-date {
@@ -199,12 +211,25 @@
                             </a>
                             <div class="order-price">$${order.price*0.9.toFixed(2)}</div>
                         </div>
+                        <div style="display: flex; flex-direction: column; gap: 4px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
                         <div class="order-details">
                             <span class="order-status status-${order.status}">
                                 ${order.status}
                             </span>
                         </div>
-                        <div class="order-date">Ordered on ${new Date(order.date).toLocaleDateString()}</div>
+                        <div class="order-date">${new Date(order.date).toLocaleDateString()}</div>
+                    </div>
+                    ${order.status !== 'completed' && order.status !== 'cancelled' ? `
+                        <button onclick="event.stopPropagation();  changeOrderState('${order.id}')" class='ppcancell' style="width: 100px; padding: 8px; background-color: #e74c3c; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                            Cancel Order
+                        </button>
+                        <button onclick="event.stopPropagation();  changeOrderState('${order.id}')" class='ppcancell' style="width: 100px; padding: 8px; background-color: #4545f5; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                            ${order.status === 'placed' ? `Accept Order` : `Completed`}
+                        </button>
+
+                    ` : ''}
+                </div>
                     </div>
                 </div>
             `;
@@ -241,5 +266,34 @@ function openorderdet(event, orderId){
         //yaha nahi fetch-order me, why??
 
     </script>
+
+
+<!-- script to change order state -->
+<script>
+//function to change order state
+async function changeOrderState(orderId) {
+    const newState=event.target.innerText.trim()==='Cancel Order'? 'cancelled':event.target.innerText.trim()==='Accept Order'?'processing':'completed';
+    console.log("New state to be set:", newState);
+    try {
+        const response = await fetch(`api/order/${orderId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ newState: newState })
+        });
+        if (response.ok) {
+            alert('Order state changed successfully!');
+            fetchOrders(); // Refresh the orders after state change
+
+        } else {
+            console.error('Failed to update order status:', response.statusText);
+        }
+    } catch (error) {
+        console.error('Error updating order status:', error);
+    }
+}
+
+</script>
 </body>
 </html>

@@ -48,16 +48,16 @@
           <th>Order ID</th>
           <th>Owner</th>
           <th>Client</th>
-          <th>Amount ($)</th>
+          <th>Amount (₹)</th>
           <th>Date</th>
-          <th>Admin Revenue ($)</th>
+          <th>Admin Revenue (₹)</th>
         </tr>
       </thead>
       <tbody>
         <!-- Filled by JS -->
       </tbody>
     </table>
-    <div class="prp-total-revenue" id="netRevenue">Net Revenue: $0</div>
+    <div class="prp-total-revenue" id="netRevenue">Net Revenue: ₹0</div>
   </div>
 
   <script>
@@ -78,7 +78,9 @@
       return;
     }
 
-    data.forEach(order => {
+    const filtData = data.filter(order => order.orderStatus !== 'cancelled');
+
+    filtData.forEach(order => {
       const revenue = (order.amount * 0.1).toFixed(2);
       netRevenue += parseFloat(revenue);
 
@@ -87,14 +89,14 @@
         <td style="max-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${order._id}">${order._id}</td>
         <td>${order.editorId.fullName}</td>
         <td>${order.userId.fullName}</td>
-        <td>$${order.amount.toFixed(2)}</td>
+        <td>₹${order.amount.toFixed(2)}</td>
         <td>${new Date(order.createdAt).toLocaleDateString()}</td>
-        <td>$${revenue}</td>
+        <td>₹${revenue}</td>
       `;
       tableBody.appendChild(row);
     });
 
-    document.getElementById("netRevenue").textContent = `Net Revenue: $${netRevenue.toFixed(2)}`;
+    document.getElementById("netRevenue").textContent = `Net Revenue: ₹${netRevenue.toFixed(2)}`;
   } catch (error) {
     console.error("Failed to fetch orders:", error);
   }
